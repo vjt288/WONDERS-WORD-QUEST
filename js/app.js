@@ -1,24 +1,866 @@
-const app=document.getElementById("app");let data,state,chapter,mode,q=0,timer,locked=false;const STORE="WQ_V7";const modes=["PICTURE MATCH","SPELL IT","SCRAMBLE","4-CHOICE","SPEED CHALLENGE"];
-const blank=()=>({name:"",gender:"boy",score:0,unlocked:1,chapters:{},mastery:{},last:{screen:"home"}});
-async function getSave(){try{return JSON.parse(localStorage.getItem(STORE)||"null")}catch(e){return null}}async function save(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function page(x){app.innerHTML=`<div class="screen"><div class="panel">${x}</div></div>`}function stars(id){return state.chapters[id]?.stars||0}
-function start(){page(`<div class="title">WONDERS<br>WORD QUEST</div><div class="subtitle">A 16-BIT ENGLISH RPG ADVENTURE</div><input id="name" class="input" placeholder="ENTER YOUR NAME" maxlength="16"><div class="choices"><button class="choice" onclick="gender='boy'">👦 BOY</button><button class="choice" onclick="gender='girl'">👧 GIRL</button></div><div class="center badge">Choose your hero</div><button class="btn gold" onclick="create()">START ADVENTURE ▶</button>`);window.gender="boy"}
-async function create(){let n=document.getElementById("name").value.trim();if(!n)return alert("請輸入名字");state=blank();state.name=n;state.gender=gender;await save();map()}
-function menu(){page(`<div class="title">WONDERS WORD QUEST</div><div class="subtitle">YOUR WORD QUEST BEGINS!</div><div class="center badge">👤 ${esc(state.name)}　${state.gender==="boy"?"👦":"👧"}　SCORE ${state.score}</div><button class="btn" onclick="map()">🗺️ WORLD MAP</button><button class="btn" onclick="review()">🎯 REVIEW QUEST</button><button class="btn" onclick="book()">📖 MY WORD BOOK</button><button class="btn" onclick="achievements()">🏆 ACHIEVEMENTS</button>`)}
-function map(){let x=data.chapters.map(c=>{let lock=c.id>state.unlocked;return `<button class="chapter ${lock?"locked":""}" ${lock?"disabled":`onclick="chapterMenu(${c.id})"`}><h3>${c.code}</h3>${c.title}<div class="stars">${"★".repeat(stars(c.id))}${"☆".repeat(3-stars(c.id))}</div><div class="small">${lock?"🔒 LOCKED":`${c.words.length} WORDS · ${state.chapters[c.id]?.complete?"✓ COMPLETE":"READY"}`}</div></button>`}).join("");page(`<div class="topbar"><button class="btn" style="width:auto;margin:0" onclick="menu()">← MENU</button><span class="badge">SCORE ${state.score}</span></div><div class="title" style="font-size:42px">🗺️ WONDERS WORLD</div><div class="map">${x}</div>`)}
-function chapterMenu(id){chapter=data.chapters[id-1];page(`<div class="topbar"><button class="btn" style="width:auto;margin:0" onclick="map()">← MAP</button><span class="stars">${"★".repeat(stars(id))}${"☆".repeat(3-stars(id))}</span></div><div class="title" style="font-size:36px">${chapter.code}</div><div class="subtitle">${chapter.title}</div><button class="btn gold" onclick="play(${id},'mixed')">▶ PLAY QUEST</button><button class="btn" onclick="play(${id},'review')">🔄 REPLAY / PRACTICE</button><div class="wordgrid">${chapter.words.map(x=>`<div class="word"><b>${esc(x.w)}</b><br><span class="small">${esc(x.m)}</span><br>${"⭐".repeat(state.mastery[x.w]||0)}</div>`).join("")}</div>`)}
-function play(id,m){chapter=data.chapters[id-1];mode=m;q=0;next()}
-function shuffle(a){return [...a].sort(()=>Math.random()-.5)}function pool(){let p=chapter.words;return mode==="review"?p.filter(x=>(state.mastery[x.w]||0)<3).concat(p.filter(x=>(state.mastery[x.w]||0)>=3).slice(0,3)):p}
-function choices(item){let opts=shuffle([item,...shuffle(chapter.words.filter(x=>x.w!==item.w)).slice(0,3)]);return `<div class="choices">${opts.map(o=>`<button class="choice" onclick="answer('${encodeURIComponent(o.w)}','${encodeURIComponent(item.w)}')">${esc(o.w)}</button>`).join("")}</div>`}
-function next(){clearInterval(timer);locked=false;let p=pool();if(q>=Math.min(7,p.length)){finish();return}let item=p[q],m=modes[(q+chapter.id)%modes.length],body;if(m==="SPELL IT")body=`<div class="question">🔤 SPELL IT</div><div class="subtitle">${esc(item.m)}</div><input id="typed" class="input" placeholder="Type the English word"><button class="btn gold" onclick="typed('${encodeURIComponent(item.w)}')">SUBMIT</button>`;else if(m==="SCRAMBLE")body=`<div class="question">🧩 ${shuffle(item.w.split("")).join(" · ")}</div><div class="subtitle">${esc(item.m)}</div>${choices(item)}`;else if(m==="PICTURE MATCH")body=`<div class="question">🖼️ PICTURE MATCH</div><div class="subtitle">Choose the word for: ${esc(item.m)}</div>${choices(item)}`;else body=`<div class="question">${m==="SPEED CHALLENGE"?"⚡":"🎯"} ${m}</div><div class="subtitle">${esc(item.m)}</div>${choices(item)}`;page(`<div class="topbar"><button class="btn" style="width:auto;margin:0" onclick="chapterMenu(${chapter.id})">✕ EXIT</button><span class="badge">${q+1}/7</span><span class="timer" id="timer">30</span></div><div class="progress"><i style="width:${q/7*100}%"></i></div>${body}`);let left=30;timer=setInterval(()=>{left--;let e=document.getElementById("timer");if(e)e.textContent=left;if(left<=0){clearInterval(timer);wrong(item,true)}},1000)}
-function typed(ans){if(locked)return;let v=document.getElementById("typed").value.trim().toLowerCase();v===decodeURIComponent(ans).toLowerCase()?correct(decodeURIComponent(ans)):wrong({w:decodeURIComponent(ans),m:""},false)}
-function answer(a,b){if(locked)return;decodeURIComponent(a)===decodeURIComponent(b)?correct(decodeURIComponent(b)):wrong({w:decodeURIComponent(b),m:""},false)}
-function correct(w){locked=true;clearInterval(timer);state.score+=100;state.mastery[w]=Math.min(3,(state.mastery[w]||0)+1);save();page(`<div class="center"><div class="title">✓</div><div class="question">CORRECT!</div><div class="subtitle">${esc(w)}</div><button class="btn gold" onclick="q++;next()">CONTINUE ▶</button></div>`)}
-function wrong(item,timeout){if(locked)return;locked=true;clearInterval(timer);page(`<div class="center"><div class="title">✕</div><div class="question">${timeout?"TIME UP!":"TRY AGAIN!"}</div><div class="subtitle">${esc(item.w)}</div><button class="btn" onclick="q++;next()">CONTINUE ▶</button></div>`)}
-function finish(){let mastered=chapter.words.filter(x=>(state.mastery[x.w]||0)>=3).length;let s=mastered>=5?3:mastered>=2?2:1;state.chapters[chapter.id]={complete:true,stars:Math.max(stars(chapter.id),s)};if(chapter.id===state.unlocked&&state.unlocked<data.chapters.length)state.unlocked++;state.score+=250;save();page(`<div class="center"><div class="title" style="font-size:46px">QUEST CLEAR!</div><div class="question">${"⭐".repeat(s)}${"☆".repeat(3-s)}</div><div class="subtitle">Words mastered: ${mastered}/${Math.min(7,chapter.words.length)}<br>你可以隨時 Replay 這一章。</div><button class="btn gold" onclick="chapterMenu(${chapter.id})">🔄 PLAY AGAIN</button><button class="btn" onclick="map()">🗺️ WORLD MAP</button></div>`)}
-function review(){let weak=[];data.chapters.forEach(c=>c.words.forEach(x=>{if((state.mastery[x.w]||0)<3)weak.push([x,c])}));page(`<div class="topbar"><button class="btn" style="width:auto;margin:0" onclick="menu()">← MENU</button></div><div class="title" style="font-size:38px">🎯 REVIEW QUEST</div><div class="subtitle">系統會優先找出還沒三星的單字。</div>${weak.slice(0,20).map(([x,c])=>`<div class="review-card"><b>${esc(x.w)}</b> — ${esc(x.m)}<br><span class="small">${c.code} · ${"⭐".repeat(state.mastery[x.w]||0)}${"☆".repeat(3-(state.mastery[x.w]||0))}</span></div>`).join("")}${weak.length?`<button class="btn gold" onclick="globalReview()">▶ START REVIEW</button>`:"<div class='center'>🎉 目前單字都已達三星！</div>"}`)}
-function globalReview(){let all=[];data.chapters.forEach(c=>c.words.forEach(x=>{if((state.mastery[x.w]||0)<3)all.push({...x})}));if(!all.length)return;chapter={id:0,code:"REVIEW",title:"Mixed Review",words:shuffle(all).slice(0,7)};mode="review";q=0;next()}
-function book(){page(`<div class="topbar"><button class="btn" style="width:auto;margin:0" onclick="menu()">← MENU</button></div><div class="title" style="font-size:38px">📖 MY WORD BOOK</div>${data.chapters.map(c=>`<h3>${c.code} · ${c.title}</h3><div class="wordgrid">${c.words.map(x=>`<div class="word"><b>${esc(x.w)}</b><br>${esc(x.m)}<br>${"⭐".repeat(state.mastery[x.w]||0)}${"☆".repeat(3-(state.mastery[x.w]||0))}</div>`).join("")}</div>`).join("")}`)}
-function achievements(){let n=Object.values(state.chapters).filter(x=>x.complete).length,m=Object.values(state.mastery).filter(x=>x>=3).length;page(`<div class="topbar"><button class="btn" style="width:auto;margin:0" onclick="menu()">← MENU</button></div><div class="title" style="font-size:38px">🏆 ACHIEVEMENTS</div><div class="review-card">🗺️ WORD EXPLORER — ${n} Chapters cleared</div><div class="review-card">📖 WORD MASTER — ${m} words mastered</div><div class="review-card">⭐ THREE-STAR HERO — ${Object.values(state.chapters).filter(x=>x.stars>=3).length} Chapters at 3 stars</div>`)}
-(async()=>{data=await fetch("data.json").then(r=>r.json());state=await getSave()||blank();state.name?menu():start()})()
+const DATA_URL="data.json";
+let DATA=null;
+const SAVE_KEY="wwq_v8_save";
+const MODES=["picture","meaning","spell","scramble","sentence","attack"];
+
+const MODE_INFO={
+ picture:["🖼️ PICTURE MATCH","看圖／情境提示 → 找單字"],
+ meaning:["📝 WORD → MEANING","英文 → 選中文意思"],
+ spell:["🔤 SPELL IT","提示 → 拼出英文"],
+ scramble:["🧩 SCRAMBLE","重新排列字母"],
+ sentence:["💬 SENTENCE QUEST","句子情境 → 找正確單字"],
+ attack:["⚡ WORD ATTACK","限時快速反應"]
+};
+
+let state={
+ name:"",
+ gender:"",
+ score:0,
+ unlocked:1,
+ stars:{},
+ mastery:{},
+ chaptersDone:{}
+};
+
+let session=null;
+
+const $=s=>document.querySelector(s);
+
+const shuffle=a=>{
+ a=[...a];
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+};
+
+function load(){
+ try{
+  const s=JSON.parse(localStorage.getItem(SAVE_KEY));
+  if(s) state={...state,...s};
+ }catch(e){}
+}
+
+function save(){
+ localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+}
+
+function stars(n){
+ return "★".repeat(n)+"☆".repeat(3-n);
+}
+
+function esc(s){
+ return String(s).replace(/[&<>"']/g,m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ }[m]));
+}
+
+function render(html){
+ $("#app").innerHTML=`<div class="shell"><div class="game">${html}</div></div>`;
+}
+
+function top(title="WONDERS WORD QUEST"){
+ return `<div class="top"><div class="logo">${title}</div><div class="score">SCORE ${state.score}</div></div>`;
+}
+
+function menuBtn(){
+ return `<button class="secondary" onclick="showMap()">← MENU</button>`;
+}
+
+async function boot(){
+ load();
+
+ render(`
+ <div class="content center">
+  <div class="hero-title">WONDERS<br>WORD QUEST</div>
+  <div class="subtitle">A 16-BIT ENGLISH RPG ADVENTURE · V8</div>
+
+  <div class="panel" style="max-width:800px;margin:35px auto">
+   <h2>YOUR HERO</h2>
+
+   <input id="name"
+    class="name"
+    placeholder="ENTER YOUR NAME"
+    value="${esc(state.name)}">
+
+   <div class="gender-grid">
+
+    <button id="boy"
+     class="gender ${state.gender==="boy"?"selected":""}"
+     onclick="chooseGender('boy')">
+     👦 BOY
+     ${state.gender==="boy"?'<span class="check">✓ SELECTED</span>':""}
+    </button>
+
+    <button id="girl"
+     class="gender ${state.gender==="girl"?"selected":""}"
+     onclick="chooseGender('girl')">
+     👧 GIRL
+     ${state.gender==="girl"?'<span class="check">✓ SELECTED</span>':""}
+    </button>
+
+   </div>
+
+   <div id="heroStatus" class="small">
+    ${state.gender?`Selected: ${state.gender.toUpperCase()}`:"Choose your hero"}
+   </div>
+
+   <button class="primary" onclick="startAdventure()">
+    START ADVENTURE ▶
+   </button>
+  </div>
+ </div>
+ `);
+}
+
+function chooseGender(g){
+ state.gender=g;
+ save();
+ boot();
+}
+
+function startAdventure(){
+ const n=$("#name").value.trim();
+
+ if(!n || !state.gender){
+  alert("Please enter your name and choose BOY or GIRL.");
+  return;
+ }
+
+ state.name=n;
+ save();
+ showMap();
+}
+
+function showMap(){
+
+ render(`
+ ${top("🗺️ WONDERS WORLD")}
+
+ <div class="content">
+
+  <div class="quest-head">
+   <h1>WONDERS WORLD</h1>
+   <div class="tag">
+    ${state.gender==="boy"?"👦":"👧"} ${esc(state.name)}
+   </div>
+  </div>
+
+  <div class="chapter-grid">
+
+   ${DATA.chapters.map(c=>{
+
+    const unlocked=c.id<=state.unlocked;
+    const done=!!state.chaptersDone[c.id];
+    const st=state.stars[c.id]||0;
+
+    return `
+    <button
+     class="chapter ${unlocked?"ready":"locked"}"
+     ${unlocked?`onclick="openChapter(${c.id})"`:"disabled"}>
+
+     <h3>CHAPTER ${c.id}</h3>
+     <div>${esc(c.title)}</div>
+     <div class="stars">${stars(st)}</div>
+
+     <div class="meta">
+      ${c.words.length} WORDS ·
+      ${done?"✓ COMPLETE":unlocked?"READY":"🔒 LOCKED"}
+     </div>
+
+    </button>
+    `;
+
+   }).join("")}
+
+  </div>
+
+  <div class="menu-row" style="margin-top:22px">
+
+   <button class="secondary" onclick="showReview()">
+    🔄 REVIEW QUEST
+   </button>
+
+   <button class="secondary" onclick="showBook()">
+    📖 MY WORD BOOK
+   </button>
+
+   <button class="secondary" onclick="boot()">
+    👤 HERO
+   </button>
+
+  </div>
+
+  <div class="footer">
+   V8：每次練習都會重新抽單字、題型與選項。
+  </div>
+
+ </div>
+ `);
+}
+
+function openChapter(id){
+
+ const c=DATA.chapters.find(x=>x.id===id);
+ const modePool=shuffle(MODES);
+
+ render(`
+ ${top()}
+
+ <div class="content">
+
+  <div class="quest-head">
+   <div>${menuBtn()}</div>
+
+   <div>
+    <h1>CHAPTER ${id}</h1>
+    <div class="tag">${esc(c.title)}</div>
+   </div>
+  </div>
+
+  <div class="panel center">
+
+   <h2>${esc(c.theme)}</h2>
+
+   <p>
+    本章 ${c.words.length} 個單字，
+    每次闖關都會重新亂數。
+   </p>
+
+   <div class="mode-grid">
+
+    ${modePool.map(m=>`
+     <div class="panel mode">
+      <div class="mode-badge">${MODE_INFO[m][0]}</div>
+      <small>${MODE_INFO[m][1]}</small>
+     </div>
+    `).join("")}
+
+   </div>
+
+   <button class="primary" onclick="startQuest(${id})">
+    START RANDOM QUEST ▶
+   </button>
+
+  </div>
+
+ </div>
+ `);
+}
+
+function startQuest(id,review=false){
+
+ const c=DATA.chapters.find(x=>x.id===id);
+
+ let pool=review
+  ? c.words.filter(w=>(state.mastery[w[0]]||{}).wrong>0)
+  : c.words;
+
+ if(!pool.length) pool=c.words;
+
+ pool=shuffle(pool);
+
+ const count=Math.min(10,pool.length);
+
+ session={
+  id,
+  review,
+  words:pool.slice(0,count),
+  q:0,
+  score:0,
+  correct:0,
+  usedHint:false,
+  modeSeq:shuffle(MODES),
+  selected:[],
+  started:Date.now()
+ };
+
+ nextQuestion();
+}
+
+function nextQuestion(){
+
+ if(session.q>=session.words.length){
+  finishQuest();
+  return;
+ }
+
+ const word=session.words[session.q];
+
+ const mode=
+  session.modeSeq[
+   session.q%session.modeSeq.length
+  ];
+
+ session.mode=mode;
+ session.selected=[];
+
+ renderQuestion(word,mode);
+}
+
+function renderQuestion(word,mode){
+
+ const [en,zh]=word;
+ const c=DATA.chapters.find(x=>x.id===session.id);
+
+ let body="";
+
+ if(mode==="meaning"){
+
+  const opts=shuffle([
+   zh,
+   ...shuffle(
+    c.words.filter(w=>w[0]!==en)
+   ).slice(0,3).map(w=>w[1])
+  ]);
+
+  body=`
+   <div class="question">${esc(en)}</div>
+   <div class="prompt">Choose the meaning.</div>
+
+   <div class="choices">
+
+    ${opts.map(o=>`
+     <button class="choice"
+      onclick="answer(
+       '${btoa(unescape(encodeURIComponent(o)))}',
+       '${btoa(unescape(encodeURIComponent(zh)))}'
+      )">
+      ${esc(o)}
+     </button>
+    `).join("")}
+
+   </div>
+  `;
+ }
+
+ else if(mode==="picture"){
+
+  body=`
+   <div class="question">🖼️</div>
+
+   <div class="prompt">
+    Which word matches this clue?
+   </div>
+
+   <div class="panel center">
+    <div style="font-size:30px">${esc(zh)}</div>
+    <p class="small">
+     Picture-style clue · choose the English word.
+    </p>
+   </div>
+
+   <div class="choices">
+
+    ${shuffle([
+     en,
+     ...shuffle(
+      c.words.filter(w=>w[0]!==en)
+     ).slice(0,3).map(w=>w[0])
+    ]).map(o=>`
+     <button class="choice"
+      onclick="answer(
+       '${btoa(unescape(encodeURIComponent(o)))}',
+       '${btoa(unescape(encodeURIComponent(en)))}'
+      )">
+      ${esc(o)}
+     </button>
+    `).join("")}
+
+   </div>
+  `;
+ }
+
+ else if(mode==="spell"){
+
+  body=`
+   <div class="question">${esc(zh)}</div>
+
+   <div class="prompt">
+    Type the English word.
+   </div>
+
+   <input
+    id="spellInput"
+    class="name"
+    style="margin:20px auto"
+    autocomplete="off">
+
+   <button class="primary" onclick="checkSpell()">
+    CHECK ✓
+   </button>
+  `;
+ }
+
+ else if(mode==="scramble"){
+
+  let letters=
+   shuffle(
+    en.replace(/\s/g,"").split("")
+   );
+
+  body=`
+   <div class="question">${esc(zh)}</div>
+
+   <div class="prompt">
+    Tap letters in the correct order.
+   </div>
+
+   <div id="scrambleAnswer" class="answer"></div>
+
+   <div class="scramble">
+
+    ${letters.map((l,i)=>`
+     <button
+      class="letter"
+      id="l${i}"
+      onclick="pickLetter('${esc(l)}',${i})">
+      ${esc(l.toUpperCase())}
+     </button>
+    `).join("")}
+
+   </div>
+
+   <button class="primary" onclick="checkScramble()">
+    CHECK ✓
+   </button>
+  `;
+ }
+
+ else if(mode==="sentence"){
+
+  const templates=[
+   `Maria saw the ______ in the street.`,
+   `The story says to ______ with others.`,
+   `You might feel ______ before a big event.`,
+   `They were ______ to join the celebration.`
+  ];
+
+  const clue=
+   templates[session.q%templates.length];
+
+  body=`
+   <div class="question">${esc(clue)}</div>
+
+   <div class="prompt">
+    Choose the word that fits best.
+   </div>
+
+   <div class="choices">
+
+    ${shuffle([
+     en,
+     ...shuffle(
+      c.words.filter(w=>w[0]!==en)
+     ).slice(0,3).map(w=>w[0])
+    ]).map(o=>`
+     <button class="choice"
+      onclick="answer(
+       '${btoa(unescape(encodeURIComponent(o)))}',
+       '${btoa(unescape(encodeURIComponent(en)))}'
+      )">
+      ${esc(o)}
+     </button>
+    `).join("")}
+
+   </div>
+  `;
+ }
+
+ else{
+
+  body=`
+   <div class="question">⚡ ${esc(zh)}</div>
+
+   <div class="prompt">
+    WORD ATTACK! Choose the correct word fast.
+   </div>
+
+   <div class="choices">
+
+    ${shuffle([
+     en,
+     ...shuffle(
+      c.words.filter(w=>w[0]!==en)
+     ).slice(0,3).map(w=>w[0])
+    ]).map(o=>`
+     <button class="choice"
+      onclick="answer(
+       '${btoa(unescape(encodeURIComponent(o)))}',
+       '${btoa(unescape(encodeURIComponent(en)))}'
+      )">
+      ${esc(o)}
+     </button>
+    `).join("")}
+
+   </div>
+  `;
+ }
+
+ render(`
+ ${top()}
+
+ <div class="content">
+
+  <div class="quest-head">
+   ${menuBtn()}
+   <div class="timer" id="timer">30</div>
+  </div>
+
+  <div class="progress">
+   <div style="width:${session.q/session.words.length*100}%"></div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+
+   <div class="mode-badge">
+    ${MODE_INFO[mode][0]}
+   </div>
+
+   ${body}
+
+   <div id="feedback" class="feedback"></div>
+
+  </div>
+
+  <div class="small center" style="margin-top:12px">
+   Question ${session.q+1} / ${session.words.length}
+  </div>
+
+ </div>
+ `);
+
+ startTimer();
+}
+
+function startTimer(){
+
+ clearInterval(session.timer);
+
+ session.left=30;
+
+ session.timer=setInterval(()=>{
+
+  session.left--;
+
+  const t=$("#timer");
+
+  if(t) t.textContent=session.left;
+
+  if(session.left<=0){
+   clearInterval(session.timer);
+   answer(null,null,true);
+  }
+
+ },1000);
+}
+
+function decode(s){
+
+ try{
+  return decodeURIComponent(escape(atob(s)));
+ }catch(e){
+  return s;
+ }
+}
+
+function answer(a,b,timeout=false){
+
+ clearInterval(session.timer);
+
+ const got=
+  a===null?null:decode(a);
+
+ const correct=decode(b);
+
+ handleAnswer(got,correct,timeout);
+}
+
+function handleAnswer(got,correct,timeout=false){
+
+ const ok=
+  !timeout &&
+  got===correct;
+
+ const key=
+  session.words[session.q][0];
+
+ state.mastery[key]=
+  state.mastery[key]||
+  {correct:0,wrong:0};
+
+ if(ok){
+
+  state.mastery[key].correct++;
+  state.score+=100;
+
+ }else{
+
+  state.mastery[key].wrong++;
+  state.score=
+   Math.max(0,state.score-20);
+
+ }
+
+ session.correct+=ok?1:0;
+
+ save();
+
+ const f=$("#feedback");
+
+ if(f){
+
+  f.textContent=
+   timeout
+    ?`⏰ Time up! Answer: ${correct}`
+    :ok
+      ?"✅ Correct!"
+      :`❌ Correct answer: ${correct}`;
+ }
+
+ setTimeout(()=>{
+
+  session.q++;
+  nextQuestion();
+
+ },650);
+}
+
+function checkSpell(){
+
+ const v=
+  $("#spellInput").value
+   .trim()
+   .toLowerCase();
+
+ handleAnswer(
+  v,
+  session.words[session.q][0].toLowerCase(),
+  false
+ );
+}
+
+function pickLetter(l,i){
+
+ if(session.selected.includes(i)) return;
+
+ session.selected.push(i);
+
+ const el=$("#l"+i);
+
+ if(el) el.disabled=true;
+
+ $("#scrambleAnswer").textContent=
+  session.selected
+   .map(x=>$("#l"+x).textContent.toLowerCase())
+   .join("");
+}
+
+function checkScramble(){
+
+ const target=
+  session.words[session.q][0]
+   .replace(/\s/g,"")
+   .toLowerCase();
+
+ const got=
+  session.selected
+   .map(x=>$("#l"+x).textContent.toLowerCase())
+   .join("");
+
+ handleAnswer(got,target,false);
+}
+
+function finishQuest(){
+
+ clearInterval(session.timer);
+
+ const pct=
+  Math.round(
+   session.correct/
+   session.words.length*100
+  );
+
+ let earned=
+  pct>=90?3:
+  pct>=70?2:1;
+
+ const old=
+  state.stars[session.id]||0;
+
+ if(earned>old)
+  state.stars[session.id]=earned;
+
+ state.chaptersDone[session.id]=true;
+
+ if(
+  session.id===state.unlocked &&
+  state.unlocked<6
+ ){
+  state.unlocked++;
+ }
+
+ save();
+
+ render(`
+ ${top()}
+
+ <div class="content result">
+
+  <div class="panel">
+
+   <div class="big">${stars(earned)}</div>
+
+   <h1>
+    ${session.review?
+     "REVIEW COMPLETE":
+     "QUEST COMPLETE"}
+   </h1>
+
+   <p>
+    Correct:
+    ${session.correct} /
+    ${session.words.length}
+    (${pct}%)
+   </p>
+
+   <p>
+    本次題目、題型與選項下次都會重新亂數。
+   </p>
+
+   <div class="menu-row">
+
+    <button class="primary"
+     onclick="openChapter(${session.id})">
+     PLAY AGAIN 🔀
+    </button>
+
+    <button class="secondary"
+     onclick="showMap()">
+     WORLD MAP
+    </button>
+
+   </div>
+
+  </div>
+
+ </div>
+ `);
+}
+
+function showReview(){
+
+ const weak=
+  Object.entries(state.mastery)
+   .filter(([k,v])=>v.wrong>0)
+   .map(([k])=>k);
+
+ render(`
+ ${top()}
+
+ <div class="content">
+
+  <div class="quest-head">
+   ${menuBtn()}
+   <h1>🔄 REVIEW QUEST</h1>
+  </div>
+
+  <div class="panel center">
+
+   <h2>Smart Random Review</h2>
+
+   <p>
+    系統會優先抽曾答錯的單字；
+    每次都重新洗牌。
+   </p>
+
+   <div class="tag">
+    Weak words: ${weak.length}
+   </div>
+
+   <div class="chapter-grid" style="margin-top:18px">
+
+    ${DATA.chapters.map(c=>`
+
+     <button class="chapter ready"
+      onclick="startQuest(${c.id},true)">
+
+      <h3>CHAPTER ${c.id}</h3>
+
+      <div>${esc(c.title)}</div>
+
+      <div class="meta">
+       Review ${c.words.length} words
+      </div>
+
+     </button>
+
+    `).join("")}
+
+   </div>
+
+  </div>
+
+ </div>
+ `);
+}
+
+function showBook(){
+
+ const words=
+  DATA.chapters.flatMap(c=>c.words);
+
+ render(`
+ ${top()}
+
+ <div class="content">
+
+  <div class="quest-head">
+   ${menuBtn()}
+   <h1>📖 MY WORD BOOK</h1>
+  </div>
+
+  <div class="wordbook">
+
+   ${words.map(([e,z])=>{
+
+    const m=state.mastery[e]||{};
+    const n=m.correct||0;
+
+    return `
+     <div class="word">
+      <strong>${esc(e)}</strong>
+      <span>${esc(z)}</span>
+
+      <div class="stars">
+       ${n>=3?"★★★":n>=1?"★★☆":"★☆☆"}
+      </div>
+
+     </div>
+    `;
+
+   }).join("")}
+
+  </div>
+
+ </div>
+ `);
+}
+
+load();
+
+fetch(DATA_URL)
+ .then(r=>r.json())
+ .then(d=>{
+  DATA=d;
+  boot();
+ })
+ .catch(e=>{
+  document.body.innerHTML=
+   "<h2 style='padding:30px'>Unable to load game data.</h2>";
+ });
