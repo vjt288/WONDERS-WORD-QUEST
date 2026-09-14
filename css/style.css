@@ -1,3 +1,8 @@
+/* =========================================================
+   WONDERS WORD QUEST
+   V8.5 — 16:9 RPG VIEWPORT + RWD
+========================================================= */
+
 * {
   box-sizing: border-box;
 }
@@ -7,14 +12,14 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
   background: #07111f;
-  color: #fff;
+  color: #ffffff;
   font-family: Arial, "Microsoft JhengHei", sans-serif;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 button,
@@ -31,163 +36,292 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* =========================================================
+   OUTER SCREEN
+========================================================= */
+
 #app {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
 }
 
-/* =========================
-   GAME FRAME
-========================= */
-
 .shell {
-  width: 100%;
-  min-height: 100vh;
-  padding: clamp(8px, 1.5vw, 24px);
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background:
+    radial-gradient(
+      circle at center,
+      #132943 0%,
+      #091522 55%,
+      #050b12 100%
+    );
 }
 
+/* =========================================================
+   16:9 RPG VIEWPORT
+========================================================= */
+
 .game {
-  width: min(100%, 1600px);
-  min-height: min(94vh, 1000px);
+  position: relative;
+
+  /* 核心：保持真正 16:9 */
+  aspect-ratio: 16 / 9;
+
+  /* 先以寬度為主 */
+  width: min(100vw, 177.7778vh);
+
+  /* 不超過視窗 */
+  max-width: 100vw;
+  max-height: 100vh;
+
+  /* 高度由 aspect-ratio 自動計算 */
+  height: auto;
+
   border: 3px solid #5d718c;
-  border-radius: clamp(10px, 1.2vw, 18px);
+  border-radius: clamp(8px, 1vw, 18px);
+
   background: #0b1728;
-  box-shadow: 0 18px 60px rgba(0, 0, 0, .45);
+
+  box-shadow:
+    0 20px 70px rgba(0, 0, 0, .55);
+
   overflow: hidden;
 }
 
-/* =========================
+/* =========================================================
    TOP BAR
-========================= */
+========================================================= */
 
 .top {
-  min-height: clamp(58px, 6vw, 82px);
-  padding: 12px clamp(14px, 3vw, 42px);
+  height: 9%;
+  min-height: 54px;
+
+  padding:
+    0 clamp(16px, 2.5vw, 42px);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+
+  gap: 20px;
+
   border-bottom: 2px solid #334963;
-  background: #101f34;
+
+  background:
+    linear-gradient(
+      180deg,
+      #14263d,
+      #0d1b2d
+    );
 }
 
 .logo {
-  font-size: clamp(17px, 2vw, 32px);
+  font-size: clamp(16px, 2vw, 30px);
   font-weight: 900;
   letter-spacing: 1px;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 .score {
   flex: 0 0 auto;
-  font-size: clamp(13px, 1.4vw, 22px);
-  font-weight: 800;
+
+  font-size: clamp(12px, 1.3vw, 21px);
+  font-weight: 900;
+
   white-space: nowrap;
 }
 
-/* =========================
+/* =========================================================
    CONTENT
-========================= */
+========================================================= */
 
 .content {
-  width: min(100%, 1280px);
+  width: 100%;
+  height: 91%;
+
   margin: 0 auto;
-  padding: clamp(18px, 4vw, 55px);
+
+  padding:
+    clamp(14px, 2.5vw, 42px)
+    clamp(16px, 4vw, 60px);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
 }
 
 .center {
   text-align: center;
 }
 
-.hero-title {
-  margin-top: clamp(20px, 6vh, 80px);
-  font-size: clamp(42px, 8vw, 108px);
-  line-height: .92;
-  font-weight: 1000;
-  letter-spacing: clamp(1px, .4vw, 6px);
-  text-shadow: 5px 5px 0 #243b57;
-}
-
-.subtitle {
-  margin-top: 18px;
-  color: #9fb3cc;
-  font-size: clamp(10px, 1.2vw, 18px);
-  letter-spacing: 1px;
-}
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
 
 h1 {
-  font-size: clamp(24px, 3vw, 44px);
+  margin-top: 0;
+  font-size: clamp(22px, 3vw, 44px);
 }
 
 h2 {
-  font-size: clamp(20px, 2.4vw, 34px);
+  font-size: clamp(19px, 2.3vw, 32px);
 }
 
 h3 {
-  font-size: clamp(16px, 1.8vw, 24px);
+  font-size: clamp(15px, 1.7vw, 24px);
 }
 
 p {
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* =========================
-   PANELS
-========================= */
+/* =========================================================
+   HOME TITLE
+========================================================= */
+
+.hero-title {
+  margin-top: clamp(15px, 5vh, 65px);
+
+  font-size:
+    clamp(38px, 7vw, 100px);
+
+  line-height: .9;
+
+  font-weight: 1000;
+
+  letter-spacing:
+    clamp(1px, .35vw, 6px);
+
+  text-shadow:
+    5px 5px 0 #243b57;
+}
+
+.subtitle {
+  margin-top: 15px;
+
+  color: #9fb3cc;
+
+  font-size:
+    clamp(9px, 1.1vw, 17px);
+
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   PANEL
+========================================================= */
 
 .panel {
   width: 100%;
   max-width: 100%;
-  padding: clamp(16px, 2.5vw, 32px);
-  border: 2px solid #405975;
-  border-radius: clamp(8px, 1vw, 14px);
-  background: #12233a;
+
+  padding:
+    clamp(13px, 2vw, 30px);
+
+  border:
+    2px solid #405975;
+
+  border-radius:
+    clamp(7px, .8vw, 14px);
+
+  background:
+    linear-gradient(
+      145deg,
+      #14283f,
+      #102137
+    );
 }
 
-/* =========================
-   HERO
-========================= */
+.panel.center {
+  text-align: center;
+}
+
+/* =========================================================
+   NAME INPUT
+========================================================= */
 
 .name {
   display: block;
-  width: min(100%, 520px);
-  min-height: 52px;
-  margin: 16px auto;
-  padding: 10px 16px;
-  border: 2px solid #5d718c;
+
+  width: min(100%, 500px);
+
+  min-height:
+    clamp(44px, 4.5vw, 62px);
+
+  margin:
+    14px auto;
+
+  padding:
+    8px 15px;
+
+  border:
+    2px solid #5d718c;
+
   border-radius: 8px;
+
   background: #081321;
-  color: #fff;
+
+  color: #ffffff;
+
   outline: none;
+
   text-align: center;
-  font-size: clamp(16px, 1.7vw, 24px);
+
+  font-size:
+    clamp(15px, 1.6vw, 23px);
 }
 
 .name:focus {
   border-color: #9cc8ff;
 }
 
+/* =========================================================
+   HERO SELECT
+========================================================= */
+
 .gender-grid {
-  width: min(100%, 720px);
-  margin: 22px auto 10px;
+  width: min(100%, 700px);
+
+  margin:
+    18px auto 8px;
+
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(10px, 2vw, 22px);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    clamp(8px, 1.5vw, 18px);
 }
 
 .gender {
-  min-height: clamp(82px, 10vw, 125px);
-  padding: 14px;
-  border: 3px solid #405975;
-  border-radius: 12px;
+  min-height:
+    clamp(65px, 8vw, 110px);
+
+  padding: 10px;
+
+  border:
+    3px solid #405975;
+
+  border-radius: 11px;
+
   background: #172b45;
-  color: #fff;
-  font-size: clamp(17px, 2vw, 28px);
+
+  color: #ffffff;
+
+  font-size:
+    clamp(15px, 1.8vw, 27px);
+
   font-weight: 900;
-  transition: .12s ease;
+
+  transition:
+    transform .12s ease,
+    border-color .12s ease,
+    background .12s ease;
 }
 
 .gender:hover {
@@ -196,42 +330,64 @@ p {
 
 .gender.selected {
   border-color: #ffd34e;
+
   background: #304866;
-  box-shadow: 0 0 0 3px rgba(255,211,78,.15);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(255,211,78,.15);
 }
 
 .check {
   display: block;
-  margin-top: 7px;
+
+  margin-top: 5px;
+
   color: #ffd34e;
-  font-size: clamp(11px, 1.1vw, 16px);
+
+  font-size:
+    clamp(10px, 1vw, 15px);
 }
 
-/* =========================
+/* =========================================================
    BUTTONS
-========================= */
+========================================================= */
 
 .primary,
 .secondary {
-  min-height: 48px;
-  border-radius: 9px;
-  padding: 11px 20px;
-  border: 2px solid transparent;
+  min-height:
+    clamp(43px, 4vw, 58px);
+
+  padding:
+    9px clamp(14px, 2vw, 24px);
+
+  border-radius: 8px;
+
   font-weight: 900;
-  transition: .12s ease;
+
+  transition:
+    transform .12s ease,
+    filter .12s ease;
 }
 
 .primary {
-  margin-top: 18px;
+  margin-top: 15px;
+
   background: #e9b949;
+
   color: #101010;
-  border-color: #ffdb75;
+
+  border:
+    2px solid #ffdb75;
 }
 
 .secondary {
   background: #1a2d45;
-  color: #fff;
-  border-color: #5d718c;
+
+  color: #ffffff;
+
+  border:
+    2px solid #5d718c;
 }
 
 .primary:hover,
@@ -240,46 +396,90 @@ p {
   filter: brightness(1.08);
 }
 
-/* =========================
-   MAP
-========================= */
+/* =========================================================
+   QUEST HEADER
+========================================================= */
 
 .quest-head {
   width: 100%;
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: clamp(18px, 3vw, 34px);
+
+  gap: 15px;
+
+  margin-bottom:
+    clamp(14px, 2vw, 28px);
 }
 
 .tag {
   display: inline-block;
+
   max-width: 100%;
-  padding: 7px 12px;
-  border: 1px solid #526a84;
+
+  padding:
+    6px 11px;
+
+  border:
+    1px solid #526a84;
+
   border-radius: 999px;
+
   background: #172a42;
+
   color: #c9d7e8;
-  font-size: clamp(12px, 1.2vw, 17px);
+
+  font-size:
+    clamp(10px, 1vw, 16px);
+
   overflow-wrap: anywhere;
 }
 
+/* =========================================================
+   CHAPTER MAP
+========================================================= */
+
 .chapter-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(12px, 1.8vw, 24px);
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    clamp(9px, 1.5vw, 20px);
 }
 
 .chapter {
   width: 100%;
-  min-height: clamp(150px, 16vw, 220px);
-  padding: clamp(14px, 2vw, 26px);
-  border: 3px solid #526a84;
-  border-radius: 12px;
-  background: #14283f;
-  color: #fff;
+
+  min-height:
+    clamp(115px, 14vw, 205px);
+
+  padding:
+    clamp(12px, 1.7vw, 24px);
+
+  border:
+    3px solid #526a84;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #182f4a,
+      #11243a
+    );
+
+  color: #ffffff;
+
   text-align: left;
+
+  transition:
+    transform .12s ease,
+    border-color .12s ease;
 }
 
 .chapter.ready {
@@ -288,16 +488,21 @@ p {
 
 .chapter.ready:hover {
   transform: translateY(-3px);
+  border-color: #ffd34e;
 }
 
 .chapter.locked {
-  opacity: .42;
+  opacity: .4;
 }
 
 .stars {
-  margin-top: 10px;
+  margin-top: 7px;
+
   color: #ffd34e;
-  font-size: clamp(15px, 1.5vw, 22px);
+
+  font-size:
+    clamp(13px, 1.4vw, 21px);
+
   letter-spacing: 2px;
 }
 
@@ -305,79 +510,136 @@ p {
 .small,
 .footer {
   color: #91a7c0;
-  font-size: clamp(11px, 1.05vw, 15px);
-  line-height: 1.5;
+
+  font-size:
+    clamp(10px, .95vw, 15px);
+
+  line-height: 1.45;
 }
 
 .footer {
-  margin-top: 24px;
+  margin-top: 18px;
   text-align: center;
 }
 
-/* =========================
-   GAME MODES
-========================= */
+/* =========================================================
+   MODE GRID
+========================================================= */
 
 .mode-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(10px, 1.4vw, 18px);
-  margin: 24px 0;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    clamp(8px, 1.2vw, 16px);
+
+  margin:
+    18px 0;
 }
 
 .mode {
-  min-height: 100px;
-  padding: 16px;
+  min-height:
+    clamp(70px, 8vw, 110px);
+
+  padding:
+    clamp(10px, 1.4vw, 18px);
+
   text-align: center;
 }
 
 .mode-badge {
   display: inline-block;
-  margin-bottom: 10px;
-  padding: 7px 10px;
-  border-radius: 7px;
+
+  margin-bottom: 7px;
+
+  padding:
+    6px 8px;
+
+  border-radius: 6px;
+
   background: #203852;
-  border: 1px solid #5a7390;
-  font-size: clamp(11px, 1.1vw, 16px);
+
+  border:
+    1px solid #5a7390;
+
+  font-size:
+    clamp(9px, .95vw, 15px);
+
   font-weight: 900;
 }
 
-/* =========================
+/* =========================================================
    QUESTION
-========================= */
+========================================================= */
 
 .question {
-  margin: clamp(20px, 4vw, 42px) auto 14px;
-  font-size: clamp(28px, 5vw, 64px);
+  margin:
+    clamp(15px, 3vw, 36px)
+    auto
+    10px;
+
+  font-size:
+    clamp(25px, 4.5vw, 62px);
+
   font-weight: 1000;
-  line-height: 1.15;
+
+  line-height: 1.1;
+
   overflow-wrap: anywhere;
 }
 
 .prompt {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
+
   color: #afc0d4;
-  font-size: clamp(14px, 1.5vw, 20px);
+
+  font-size:
+    clamp(12px, 1.35vw, 20px);
 }
 
+/* =========================================================
+   CHOICES
+========================================================= */
+
 .choices {
-  width: min(100%, 900px);
-  margin: 20px auto 0;
+  width: min(100%, 880px);
+
+  margin: 16px auto 0;
+
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(10px, 1.5vw, 18px);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    clamp(8px, 1.2vw, 16px);
 }
 
 .choice {
   width: 100%;
-  min-height: clamp(58px, 7vw, 84px);
-  padding: 12px 14px;
-  border: 2px solid #536b87;
-  border-radius: 10px;
+
+  min-height:
+    clamp(50px, 6vw, 80px);
+
+  padding:
+    9px 12px;
+
+  border:
+    2px solid #536b87;
+
+  border-radius: 9px;
+
   background: #182e49;
-  color: #fff;
-  font-size: clamp(15px, 1.7vw, 23px);
+
+  color: #ffffff;
+
+  font-size:
+    clamp(13px, 1.55vw, 23px);
+
   font-weight: 800;
+
   overflow-wrap: anywhere;
 }
 
@@ -386,77 +648,142 @@ p {
   background: #223c5c;
 }
 
-.feedback {
-  min-height: 34px;
-  margin-top: 16px;
-  text-align: center;
-  font-size: clamp(16px, 1.8vw, 25px);
-  font-weight: 900;
-}
+/* =========================================================
+   TIMER
+========================================================= */
 
 .timer {
   flex: 0 0 auto;
-  min-width: clamp(58px, 7vw, 86px);
-  padding: 9px 14px;
-  border: 2px solid #d18c48;
-  border-radius: 9px;
+
+  min-width:
+    clamp(50px, 6vw, 82px);
+
+  padding:
+    7px 11px;
+
+  border:
+    2px solid #d18c48;
+
+  border-radius: 8px;
+
   background: #251d17;
+
   color: #ffd34e;
+
   text-align: center;
-  font-size: clamp(22px, 3vw, 38px);
+
+  font-size:
+    clamp(19px, 2.5vw, 36px);
+
   font-weight: 1000;
 }
 
+.feedback {
+  min-height: 28px;
+
+  margin-top: 12px;
+
+  text-align: center;
+
+  font-size:
+    clamp(14px, 1.6vw, 24px);
+
+  font-weight: 900;
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
 .progress {
   width: 100%;
-  height: 10px;
+
+  height:
+    clamp(7px, .7vw, 10px);
+
   border-radius: 999px;
+
   background: #1b2d43;
+
   overflow: hidden;
 }
 
 .progress > div {
   height: 100%;
+
   border-radius: inherit;
+
   background: #e9b949;
-  transition: width .2s ease;
+
+  transition:
+    width .2s ease;
 }
 
-/* =========================
+/* =========================================================
    SCRAMBLE
-========================= */
+========================================================= */
 
 .answer {
   width: 100%;
-  min-height: 58px;
-  margin: 20px auto;
-  padding: 10px;
-  border: 2px dashed #627b97;
+
+  min-height:
+    clamp(48px, 5vw, 68px);
+
+  margin: 16px auto;
+
+  padding: 9px;
+
+  border:
+    2px dashed #627b97;
+
   border-radius: 8px;
+
   background: #091625;
-  font-size: clamp(22px, 3vw, 38px);
+
+  font-size:
+    clamp(19px, 2.7vw, 38px);
+
   font-weight: 900;
+
   letter-spacing: 3px;
+
   overflow-wrap: anywhere;
 }
 
 .scramble {
-  width: min(100%, 1000px);
-  margin: 20px auto;
+  width: min(100%, 950px);
+
+  margin: 16px auto;
+
   display: flex;
+
   flex-wrap: wrap;
+
   justify-content: center;
-  gap: clamp(7px, 1vw, 13px);
+
+  gap:
+    clamp(5px, .8vw, 12px);
 }
 
 .letter {
-  width: clamp(46px, 6vw, 72px);
-  height: clamp(46px, 6vw, 72px);
-  border: 2px solid #607b99;
-  border-radius: 9px;
+  width:
+    clamp(40px, 5.5vw, 68px);
+
+  height:
+    clamp(40px, 5.5vw, 68px);
+
+  border:
+    2px solid #607b99;
+
+  border-radius: 8px;
+
   background: #1a304a;
-  color: #fff;
-  font-size: clamp(18px, 2vw, 28px);
+
+  color: #ffffff;
+
+  font-size:
+    clamp(16px, 1.8vw, 27px);
+
   font-weight: 900;
 }
 
@@ -468,135 +795,187 @@ p {
   opacity: .3;
 }
 
-/* =========================
+/* =========================================================
    RESULT
-========================= */
+========================================================= */
 
 .result {
-  max-width: 900px;
+  width: min(100%, 850px);
+
   margin: 0 auto;
+
   text-align: center;
 }
 
 .big {
-  margin: 15px 0;
-  font-size: clamp(34px, 6vw, 72px);
+  margin: 12px 0;
+
+  font-size:
+    clamp(30px, 5.5vw, 70px);
+
   color: #ffd34e;
+
   letter-spacing: 4px;
 }
 
 .menu-row {
   display: flex;
+
   flex-wrap: wrap;
+
   justify-content: center;
+
   align-items: center;
-  gap: 12px;
+
+  gap: 10px;
 }
 
-/* =========================
+/* =========================================================
    WORD BOOK
-========================= */
+========================================================= */
 
 .wordbook {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
 }
 
 .word {
   min-width: 0;
-  padding: 14px;
-  border: 2px solid #3f5873;
-  border-radius: 8px;
+
+  padding:
+    clamp(10px, 1.2vw, 16px);
+
+  border:
+    2px solid #3f5873;
+
+  border-radius: 7px;
+
   background: #12243a;
 }
 
 .word strong,
 .word span {
   display: block;
+
   overflow-wrap: anywhere;
 }
 
 .word strong {
-  font-size: clamp(14px, 1.4vw, 19px);
+  font-size:
+    clamp(12px, 1.3vw, 19px);
 }
 
 .word span {
-  margin-top: 5px;
+  margin-top: 4px;
+
   color: #a9bad0;
-  font-size: clamp(12px, 1.15vw, 16px);
+
+  font-size:
+    clamp(10px, 1.05vw, 16px);
 }
 
-/* =========================
+/* =========================================================
    TABLET
-========================= */
+========================================================= */
 
 @media (max-width: 900px) {
 
-  .shell {
-    padding: 0;
-    align-items: stretch;
-  }
-
   .game {
-    width: 100%;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+
+    aspect-ratio: auto;
+
     border: 0;
     border-radius: 0;
   }
 
+  .top {
+    height: 9vh;
+  }
+
   .content {
-    padding: clamp(16px, 4vw, 30px);
+    height: 91vh;
+
+    padding:
+      18px
+      clamp(15px, 4vw, 35px);
   }
 
   .chapter-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
   .mode-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
   .wordbook {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 }
 
-/* =========================
+/* =========================================================
    PHONE
-========================= */
+========================================================= */
 
 @media (max-width: 600px) {
 
+  body {
+    overflow: hidden;
+  }
+
+  .game {
+    width: 100vw;
+    height: 100vh;
+
+    max-width: none;
+    max-height: none;
+  }
+
   .top {
-    min-height: 58px;
-    padding: 10px 14px;
+    height: 58px;
+
+    padding:
+      8px 12px;
   }
 
   .logo {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .score {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .content {
-    padding: 16px 13px 28px;
+    height:
+      calc(100vh - 58px);
+
+    padding:
+      14px 11px 25px;
   }
 
   .hero-title {
-    margin-top: 26px;
-    font-size: clamp(40px, 15vw, 70px);
+    margin-top: 25px;
+
+    font-size:
+      clamp(38px, 15vw, 68px);
   }
 
   .subtitle {
-    font-size: 10px;
-    line-height: 1.4;
+    font-size: 9px;
   }
 
   .panel {
-    padding: 14px;
+    padding: 13px;
   }
 
   .gender-grid,
@@ -607,11 +986,11 @@ p {
   }
 
   .gender {
-    min-height: 76px;
+    min-height: 72px;
   }
 
   .chapter {
-    min-height: 130px;
+    min-height: 120px;
   }
 
   .quest-head {
@@ -619,11 +998,15 @@ p {
   }
 
   .question {
-    font-size: clamp(27px, 9vw, 44px);
+    font-size:
+      clamp(26px, 9vw, 44px);
   }
 
   .choice {
-    min-height: 58px;
+    min-height: 57px;
+
+    font-size:
+      clamp(14px, 4.2vw, 19px);
   }
 
   .menu-row {
@@ -641,66 +1024,78 @@ p {
   }
 
   .timer {
-    min-width: 56px;
-    padding: 7px 10px;
+    min-width: 55px;
   }
 
   .mode {
-    min-height: 84px;
+    min-height: 80px;
   }
 }
 
-/* =========================
-   VERY SMALL PHONE
-========================= */
+/* =========================================================
+   SMALL PHONE
+========================================================= */
 
 @media (max-width: 380px) {
 
   .content {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .top {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 9px;
+    padding-right: 9px;
   }
 
   .logo {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .score {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .letter {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
   }
 }
 
-/* =========================
-   PHONE LANDSCAPE
-========================= */
+/* =========================================================
+   LANDSCAPE PHONE
+========================================================= */
 
-@media (max-height: 500px) and (orientation: landscape) {
+@media (
+  max-height: 500px
+) and (
+  orientation: landscape
+) {
 
-  .hero-title {
-    margin-top: 10px;
-    font-size: clamp(30px, 9vh, 60px);
+  .game {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .top {
+    height: 52px;
   }
 
   .content {
-    padding-top: 12px;
-    padding-bottom: 20px;
+    height:
+      calc(100vh - 52px);
+
+    padding:
+      10px 18px 18px;
+  }
+
+  .hero-title {
+    margin-top: 8px;
+
+    font-size:
+      clamp(30px, 9vh, 58px);
   }
 
   .gender {
-    min-height: 62px;
+    min-height: 58px;
   }
 
   .chapter {
-    min-height: 110px;
+    min-height: 100px;
   }
 }
