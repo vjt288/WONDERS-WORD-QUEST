@@ -88,10 +88,11 @@ function nextQuestion(){
  state.currentAnswerType=q.answerType;
  let body="";
  if(q.kind==="pic") body=`<img class="picture" src="${w.image}" alt="${esc(w.word)}">`;
- if(q.kind==="input") body=`<input id="answer" autocomplete="off" autocapitalize="none" style="display:block;width:min(600px,95%);margin:15px auto;padding:16px;border-radius:12px;font-size:24px;text-align:center" placeholder="Type the word">`;
+ if(q.kind==="input") body=`<input id="answer" autocomplete="off" autocapitalize="none" style="display:block;width:min(600px,95%);margin:15px auto;padding:16px;border-radius:12px;font-size:24px;text-align:center" placeholder="Type the word">
+ <div class="buttons"><button class="btn" id="submitAnswer" type="button">CONFIRM / 確定</button></div>`;
  if(q.kind==="scramble"){
    const letters=shuffle([...w.word.toUpperCase().replace(/[^A-Z]/g,"")]); state.scrambled=letters;
-   body=`<div class="scramble">${letters.map((l,i)=>`<button class="letter" data-letter="${i}">${esc(l)}</button>`).join("")}</div><div class="center"><strong id="typed"></strong></div><div class="buttons"><button class="btn" id="submitScramble">SUBMIT</button></div>`;
+   body=`<div class="scramble">${letters.map((l,i)=>`<button class="letter" data-letter="${i}">${esc(l)}</button>`).join("")}</div><div class="center"><strong id="typed"></strong></div><div class="buttons"><button class="btn" id="submitScramble" type="button">CONFIRM / 確定</button></div>`;
  }
  if(q.kind==="meaning"||q.kind==="choice"||q.kind==="pic"){
    let opts;
@@ -106,13 +107,19 @@ function nextQuestion(){
      const lookup=state.data.flatMap(c=>c.words);
      opts=shuffle([w.meaning,...distractors(w.word).map(x=>lookup.find(z=>z.word===x)?.meaning||x)]);
    }
-   body+=`<div class="answers">${opts.map(o=>`<button class="btn answer" data-answer="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+   body+=`<div class="answers">${opts.map(o=>`<button class="btn answer" type="button" data-answer="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
  }
  screen(`<section class="panel"><div class="row"><span class="pill">${q.title}</span><span class="pill">Q ${state.q+1}/${state.total}</span></div>
  <div class="timer"><div id="bar"></div></div><div class="question">${q.prompt}</div>${body}<div id="feedback" class="feedback"></div>
  <div class="buttons"><button class="btn secondary" id="quit">QUIT QUEST</button></div></section>`);
  $("#quit").onclick=()=>{clearInterval(state.timer);chapter(state.chapter)};
- if(q.kind==="input"){$("#answer").focus();$("#answer").onkeydown=e=>{if(e.key==="Enter")submit($("#answer").value)}}
+ if(q.kind==="input"){
+   const input=$("#answer");
+   input.focus();
+   input.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();submit(input.value)}};
+   const submitBtn=$("#submitAnswer");
+   if(submitBtn) submitBtn.onclick=()=>submit(input.value);
+ }
  document.querySelectorAll(".answer").forEach(b=>b.onclick=()=>submit(b.dataset.answer));
  if(q.kind==="scramble"){
    state.answer="";
