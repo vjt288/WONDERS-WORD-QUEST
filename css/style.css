@@ -1,7 +1,8 @@
 /* =========================================================
    WONDERS WORD QUEST
-   V8.6 — TRUE 16:9 RPG VIEWPORT + MOBILE RWD
-   ========================================================= */
+   V8.7 — 16-BIT RPG GAME UI
+   TRUE 16:9 + RWD
+========================================================= */
 
 * {
   box-sizing: border-box;
@@ -9,1092 +10,1087 @@
 
 html,
 body {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: #07111f;
-  color: #ffffff;
-  font-family: Arial, "Microsoft JhengHei", sans-serif;
+  background:
+    radial-gradient(circle at 50% 30%, #18385a 0%, #07111f 65%);
+  color: #fff;
+  font-family:
+    "Courier New",
+    "Microsoft JhengHei",
+    monospace;
+
   overflow: hidden;
 }
 
 /* =========================================================
-   OUTER SCREEN
-   ========================================================= */
+   GAME FRAME
+========================================================= */
 
 .shell {
   width: 100vw;
   height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   overflow: hidden;
 }
 
-/* =========================================================
-   MAIN GAME
-   Desktop = TRUE 16:9
-   ========================================================= */
-
 .game {
-  position: relative;
-
-  width: min(100vw, 177.7777778vh);
+  width: min(100vw, 177.7778vh);
   height: min(100vh, 56.25vw);
 
   aspect-ratio: 16 / 9;
 
-  max-width: 100vw;
-  max-height: 100vh;
+  position: relative;
 
   overflow: hidden;
 
-  background:
-    radial-gradient(circle at 50% 20%, #17375e 0%, #0b1c32 45%, #07111f 100%);
+  border: 4px solid #31577d;
+  border-radius: 16px;
 
-  border: 2px solid #304968;
-  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      #102b49 0%,
+      #0a1d32 45%,
+      #071322 100%
+    );
 
   box-shadow:
-    0 0 0 2px rgba(255,255,255,.04),
-    0 20px 60px rgba(0,0,0,.55);
+    0 0 0 2px #07111f,
+    0 0 0 5px rgba(255,255,255,.04),
+    0 20px 70px rgba(0,0,0,.7);
+
+  image-rendering: pixelated;
 }
 
 /* =========================================================
-   TOP BAR
-   ========================================================= */
+   PIXEL GRID OVERLAY
+========================================================= */
+
+.game::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.018) 0px,
+      rgba(255,255,255,.018) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+
+  opacity: .45;
+
+  z-index: 100;
+}
+
+/* =========================================================
+   TOP HUD
+========================================================= */
 
 .top {
   width: 100%;
-  height: 9%;
+  height: 10%;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 2.2%;
+  padding: 0 2.5%;
 
-  border-bottom: 2px solid rgba(255,255,255,.10);
+  position: relative;
+  z-index: 20;
 
   background:
     linear-gradient(
       180deg,
-      rgba(22,48,78,.96),
-      rgba(10,26,45,.96)
+      #173a5f,
+      #0c2139
     );
 
-  position: relative;
-  z-index: 10;
+  border-bottom: 4px solid #07111f;
+
+  box-shadow:
+    inset 0 -2px 0 #47739b,
+    0 4px 0 rgba(0,0,0,.35);
 }
 
-.top h1,
-.top .title {
-  margin: 0;
+.logo {
+  color: #ffd85a;
 
-  font-size: clamp(18px, 2vw, 34px);
+  font-size: clamp(16px, 2vw, 32px);
+
   font-weight: 900;
 
   letter-spacing: .08em;
 
   text-shadow:
-    2px 2px 0 #000,
-    0 0 12px rgba(255,255,255,.15);
+    3px 3px 0 #07111f,
+    0 0 12px rgba(255,216,90,.25);
 }
 
-.top button {
-  min-width: 42px;
-  min-height: 42px;
+.score {
+  padding: 7px 14px;
 
-  border: 2px solid #5b7595;
-  border-radius: 10px;
+  border: 2px solid #5c7f9f;
 
-  background: #10263f;
-  color: #ffffff;
+  background: #08192b;
 
-  cursor: pointer;
+  color: #ffd85a;
 
-  font-size: clamp(16px, 1.4vw, 24px);
+  font-size: clamp(12px, 1.1vw, 18px);
+
+  font-weight: 900;
+
+  box-shadow:
+    inset 0 0 0 2px #102b46;
 }
 
 /* =========================================================
-   CONTENT AREA
-   IMPORTANT:
-   Desktop 不允許整個遊戲上下滾動
-   ========================================================= */
+   CONTENT
+========================================================= */
 
 .content {
   width: 100%;
-  height: 91%;
-
-  overflow: hidden;
-
-  position: relative;
+  height: 90%;
 
   padding: 2.2%;
 
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  z-index: 5;
+
+  overflow: hidden;
 }
 
 /* =========================================================
-   GENERAL
-   ========================================================= */
-
-button,
-input {
-  font-family: inherit;
-}
-
-button {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:active {
-  transform: translateY(1px);
-}
-
-.hidden {
-  display: none !important;
-}
+   HOME SCREEN
+========================================================= */
 
 .center {
   text-align: center;
 }
 
-.muted {
-  color: #aebed0;
-}
-
-.small {
-  font-size: clamp(12px, 1vw, 17px);
-}
-
-/* =========================================================
-   HERO / HOME
-   ========================================================= */
-
-.hero {
-  width: 100%;
-  flex: 1;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
+.hero-title {
   text-align: center;
 
-  min-height: 0;
-}
+  margin-top: 1%;
 
-.hero h2 {
-  margin: 0 0 1.2%;
+  font-size: clamp(28px, 4vw, 62px);
 
-  font-size: clamp(30px, 4vw, 70px);
-  line-height: 1;
+  line-height: .95;
 
-  font-weight: 1000;
+  font-weight: 900;
+
   letter-spacing: .08em;
 
-  color: #ffd95a;
+  color: #ffd85a;
 
   text-shadow:
-    4px 4px 0 #111,
-    0 0 18px rgba(255,217,90,.22);
+    4px 4px 0 #08111d,
+    7px 7px 0 #152d45,
+    0 0 22px rgba(255,216,90,.22);
 }
 
-.hero p {
-  margin: 0 0 2%;
-
-  font-size: clamp(14px, 1.4vw, 24px);
-  color: #dbe7f5;
-}
-
-/* =========================================================
-   NAME INPUT
-   ========================================================= */
-
-.name-input {
-  width: min(90%, 460px);
-
-  padding: 1.2% 2%;
-
-  border: 3px solid #48698c;
-  border-radius: 12px;
-
-  outline: none;
-
-  background: #08192c;
-  color: #ffffff;
-
-  text-align: center;
-
-  font-size: clamp(16px, 1.5vw, 25px);
-
-  margin-bottom: 2%;
-}
-
-.name-input:focus {
-  border-color: #ffd95a;
-  box-shadow: 0 0 16px rgba(255,217,90,.2);
-}
-
-/* =========================================================
-   GENDER SELECTION
-   ========================================================= */
-
-.gender-grid {
-  width: min(90%, 620px);
-
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  gap: 2%;
-
-  margin-bottom: 2%;
-}
-
-.gender-btn {
-  min-height: clamp(60px, 8vw, 110px);
-
-  border: 3px solid #405a76;
-  border-radius: 16px;
-
-  background:
-    linear-gradient(180deg, #17314f, #0d2035);
-
-  color: #ffffff;
-
-  cursor: pointer;
-
-  font-size: clamp(16px, 1.7vw, 28px);
-  font-weight: 900;
-
-  transition:
-    transform .12s ease,
-    border-color .12s ease,
-    box-shadow .12s ease,
-    background .12s ease;
-}
-
-.gender-btn:hover {
-  border-color: #8aa6c4;
-  transform: translateY(-2px);
-}
-
-.gender-btn.selected {
-  border-color: #ffd95a;
-
-  background:
-    linear-gradient(180deg, #385a78, #173652);
-
-  box-shadow:
-    0 0 0 3px rgba(255,217,90,.18),
-    0 0 20px rgba(255,217,90,.18);
-
-  color: #ffd95a;
-}
-
-/* =========================================================
-   PRIMARY BUTTON
-   ========================================================= */
-
-.primary-btn {
-  min-width: min(90%, 360px);
-
-  padding: 1.3% 3%;
-
-  border: 3px solid #ffd95a;
-  border-radius: 14px;
-
-  background:
-    linear-gradient(180deg, #e3a927, #9b6510);
-
-  color: #ffffff;
-
-  cursor: pointer;
-
-  font-size: clamp(16px, 1.6vw, 28px);
-  font-weight: 1000;
-
-  text-shadow: 2px 2px 0 #3c2500;
-
-  box-shadow:
-    0 5px 0 #543700,
-    0 0 18px rgba(255,217,90,.15);
-}
-
-.primary-btn:hover {
-  filter: brightness(1.12);
-}
-
-/* =========================================================
-   WORLD MAP
-   ========================================================= */
-
-.map-title {
-  flex: 0 0 auto;
-
-  text-align: center;
-
-  margin: 0 0 1.5%;
-
-  font-size: clamp(22px, 2.4vw, 42px);
-  font-weight: 1000;
-
-  color: #ffd95a;
-
-  text-shadow: 3px 3px 0 #000;
-}
-
-.chapter-grid {
-  width: 100%;
-  flex: 1;
-
-  min-height: 0;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  grid-template-rows:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 1.5%;
-}
-
-.chapter-card {
-  min-width: 0;
-  min-height: 0;
-
-  padding: 3%;
-
-  border: 3px solid #38536f;
-  border-radius: 14px;
-
-  background:
-    linear-gradient(145deg, #173450, #0b1c30);
-
-  cursor: pointer;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-
-  overflow: hidden;
-
-  transition:
-    transform .12s ease,
-    border-color .12s ease,
-    box-shadow .12s ease;
-}
-
-.chapter-card:hover {
-  transform: translateY(-3px);
-  border-color: #6f91b2;
-}
-
-.chapter-card.locked {
-  cursor: not-allowed;
-
-  filter: grayscale(.55);
-
-  opacity: .55;
-}
-
-.chapter-card.ready {
-  border-color: #55c8ff;
-
-  box-shadow:
-    0 0 18px rgba(85,200,255,.13);
-}
-
-.chapter-card.completed {
-  border-color: #ffd95a;
-}
-
-.chapter-number {
-  font-size: clamp(12px, 1vw, 18px);
-  color: #8fa8c1;
-  margin-bottom: 3%;
-}
-
-.chapter-name {
-  font-size: clamp(14px, 1.45vw, 25px);
-  font-weight: 1000;
-  line-height: 1.2;
-}
-
-.chapter-status {
-  margin-top: 4%;
-
-  font-size: clamp(12px, 1vw, 18px);
-
-  color: #ffd95a;
-}
-
-/* =========================================================
-   QUEST HEADER
-   ========================================================= */
-
-.quest-header {
-  flex: 0 0 auto;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 2%;
-
-  margin-bottom: 1.5%;
-}
-
-.quest-title {
-  min-width: 0;
-
-  font-size: clamp(18px, 2vw, 34px);
-  font-weight: 1000;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.quest-meta {
-  flex: 0 0 auto;
-
-  display: flex;
-  gap: 1vw;
-
-  font-size: clamp(12px, 1vw, 18px);
-}
-
-/* =========================================================
-   MODE SELECTION
-   ========================================================= */
-
-.mode-grid {
-  width: 100%;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap: 1.5%;
-
-  margin-bottom: 1.5%;
-}
-
-.mode-btn {
-  min-height: clamp(48px, 6vw, 80px);
-
-  border: 2px solid #3d5873;
-  border-radius: 12px;
-
-  background: #10263f;
-  color: #ffffff;
-
-  cursor: pointer;
-
-  font-size: clamp(12px, 1.1vw, 19px);
-  font-weight: 900;
-}
-
-.mode-btn:hover {
-  border-color: #75a1ca;
-}
-
-.mode-btn.selected {
-  border-color: #ffd95a;
-
-  background: #244765;
-
-  color: #ffd95a;
-
-  box-shadow:
-    0 0 12px rgba(255,217,90,.14);
-}
-
-/* =========================================================
-   QUESTION PANEL
-   ========================================================= */
-
-.question-panel {
-  width: 100%;
-  flex: 1;
-
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  padding: 1.5%;
-
-  border: 2px solid #314b66;
-  border-radius: 16px;
-
-  background:
-    rgba(5,17,31,.78);
-
-  overflow: hidden;
-}
-
-.question-label {
-  flex: 0 0 auto;
-
-  margin-bottom: 1%;
-
-  font-size: clamp(12px, 1vw, 17px);
-
-  color: #9db1c6;
-}
-
-.question {
-  flex: 0 0 auto;
-
-  width: 100%;
-
-  text-align: center;
-
-  margin-bottom: 1%;
-
-  font-size: clamp(24px, 3vw, 52px);
-  line-height: 1.1;
-
-  font-weight: 1000;
-
-  text-shadow: 3px 3px 0 #000;
-}
-
-.question-meaning {
-  font-size: clamp(14px, 1.3vw, 22px);
-
-  color: #d9e6f3;
-
-  margin-bottom: 1.5%;
-}
-
-/* =========================================================
-   TIMER
-   ========================================================= */
-
-.timer-wrap {
-  width: min(90%, 760px);
-
-  flex: 0 0 auto;
-
-  margin-bottom: 1.5%;
-}
-
-.timer {
-  height: clamp(10px, 1vw, 18px);
-
-  width: 100%;
-
-  border: 2px solid #38536e;
-  border-radius: 999px;
-
-  background: #07111f;
-
-  overflow: hidden;
-}
-
-.timer-bar {
-  height: 100%;
-  width: 100%;
-
-  background: #55d66f;
-
-  transition: width .25s linear;
-}
-
-.timer-bar.warning {
-  background: #ffb52e;
-}
-
-.timer-bar.danger {
-  background: #ff5b5b;
-}
-
-/* =========================================================
-   CHOICES
-   ========================================================= */
-
-.choices {
-  width: min(90%, 820px);
-
-  display: grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap: 1.5%;
-
-  flex: 1;
-
-  min-height: 0;
-
-  align-content: center;
-}
-
-.choice {
-  min-height: clamp(48px, 6vw, 85px);
-
-  border: 3px solid #3b5772;
-  border-radius: 13px;
-
-  background:
-    linear-gradient(180deg, #173450, #0d2137);
-
-  color: #ffffff;
-
-  cursor: pointer;
-
-  padding: 1.2%;
-
-  font-size: clamp(14px, 1.3vw, 23px);
-  font-weight: 900;
-
-  transition:
-    border-color .1s ease,
-    transform .1s ease,
-    background .1s ease;
-}
-
-.choice:hover {
-  border-color: #83a8cb;
-  transform: translateY(-2px);
-}
-
-.choice.correct {
-  border-color: #63e27b;
-  background: #174e2a;
-}
-
-.choice.wrong {
-  border-color: #ff5b5b;
-  background: #5b2020;
-}
-
-/* =========================================================
-   SCRAMBLE LETTERS
-   ========================================================= */
-
-.scramble {
-  width: min(94%, 900px);
-
-  display: flex;
-
-  flex-wrap: wrap;
-  justify-content: center;
-
-  gap: 1%;
-
-  margin-bottom: 1.5%;
-}
-
-.letter-btn {
-  width: clamp(38px, 4vw, 68px);
-  height: clamp(38px, 4vw, 68px);
-
-  border: 3px solid #55728e;
-  border-radius: 10px;
-
-  background: #132d48;
-  color: #ffffff;
-
-  cursor: pointer;
-
-  font-size: clamp(17px, 1.8vw, 30px);
-  font-weight: 1000;
-}
-
-.letter-btn.used {
-  opacity: .28;
-  cursor: default;
-}
-
-.answer-display {
-  min-height: clamp(42px, 5vw, 70px);
-
-  width: min(90%, 700px);
-
-  padding: 1% 2%;
-
-  border-bottom: 3px solid #6f89a2;
-
-  text-align: center;
-
-  font-size: clamp(20px, 2.3vw, 40px);
-  font-weight: 1000;
-
-  letter-spacing: .12em;
-
-  margin-bottom: 1.5%;
-}
-
-/* =========================================================
-   PROGRESS
-   ========================================================= */
-
-.progress {
-  width: min(90%, 900px);
-
-  flex: 0 0 auto;
-
+.subtitle {
   margin-top: 1%;
 
-  font-size: clamp(12px, 1vw, 17px);
-
-  color: #9fb1c3;
-
   text-align: center;
-}
 
-/* =========================================================
-   RESULT
-   ========================================================= */
+  color: #9ec8e8;
 
-.result {
-  flex: 1;
+  font-size: clamp(11px, 1.1vw, 18px);
 
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-}
-
-.result h2 {
-  margin: 0 0 1%;
-
-  font-size: clamp(28px, 3.5vw, 58px);
-
-  color: #ffd95a;
-
-  text-shadow: 3px 3px 0 #000;
-}
-
-.result p {
-  margin: .5% 0;
-
-  font-size: clamp(14px, 1.3vw, 22px);
-}
-
-/* =========================================================
-   STARS
-   ========================================================= */
-
-.stars {
-  display: flex;
-
-  justify-content: center;
-
-  gap: .6%;
-
-  margin: 1.5% 0;
-
-  font-size: clamp(28px, 4vw, 60px);
-}
-
-.star {
-  color: #38495a;
-}
-
-.star.active {
-  color: #ffd95a;
-
-  text-shadow:
-    0 0 12px rgba(255,217,90,.35);
-}
-
-/* =========================================================
-   WORD BOOK
-   ========================================================= */
-
-.wordbook {
-  width: 100%;
-
-  flex: 1;
-
-  min-height: 0;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap: 1%;
-
-  overflow: hidden;
-}
-
-.word-card {
-  min-width: 0;
-  min-height: 0;
-
-  padding: 3%;
-
-  border: 2px solid #344f6a;
-  border-radius: 12px;
-
-  background: #0d2137;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  overflow: hidden;
-}
-
-.word-card .en {
-  font-size: clamp(14px, 1.4vw, 23px);
-  font-weight: 1000;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.word-card .zh {
-  margin-top: 4%;
-
-  font-size: clamp(12px, 1vw, 18px);
-
-  color: #aebfd1;
-}
-
-.word-card .mastery {
-  margin-top: 5%;
-
-  font-size: clamp(12px, 1vw, 18px);
-
-  color: #ffd95a;
-}
-
-/* =========================================================
-   REVIEW
-   ========================================================= */
-
-.review-list {
-  width: 100%;
-
-  flex: 1;
-
-  min-height: 0;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap: 1%;
-
-  overflow: hidden;
-}
-
-.review-card {
-  min-height: 0;
-
-  padding: 4%;
-
-  border: 2px solid #405a74;
-  border-radius: 12px;
-
-  background: #0e243b;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.review-card strong {
-  font-size: clamp(14px, 1.3vw, 22px);
-}
-
-.review-card span {
-  margin-top: 4%;
-
-  font-size: clamp(12px, 1vw, 17px);
-
-  color: #aebfd0;
-}
-
-/* =========================================================
-   ACHIEVEMENTS
-   ========================================================= */
-
-.achievement-grid {
-  width: 100%;
-
-  flex: 1;
-
-  min-height: 0;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap: 1.5%;
-}
-
-.achievement {
-  min-height: 0;
-
-  border: 2px solid #3b5670;
-  border-radius: 12px;
-
-  background: #0e243b;
-
-  padding: 4%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-}
-
-.achievement.unlocked {
-  border-color: #ffd95a;
-
-  box-shadow:
-    0 0 16px rgba(255,217,90,.12);
-}
-
-.achievement-title {
-  font-size: clamp(13px, 1.2vw, 21px);
-  font-weight: 1000;
-}
-
-.achievement-text {
-  margin-top: 4%;
-
-  font-size: clamp(11px, .95vw, 16px);
-
-  color: #aebfd0;
-}
-
-/* =========================================================
-   BACK BUTTON
-   ========================================================= */
-
-.back-btn {
-  flex: 0 0 auto;
-
-  align-self: flex-start;
-
-  margin-bottom: 1.5%;
-
-  padding: .7% 1.5%;
-
-  border: 2px solid #48637d;
-  border-radius: 10px;
-
-  background: #10263e;
-  color: #ffffff;
-
-  cursor: pointer;
-
-  font-size: clamp(12px, 1vw, 18px);
-}
-
-/* =========================================================
-   HINT
-   ========================================================= */
-
-.hint-btn {
-  flex: 0 0 auto;
-
-  margin-top: 1%;
-
-  padding: .7% 1.5%;
-
-  border: 2px solid #7e6c39;
-  border-radius: 9px;
-
-  background: #332d18;
-  color: #ffd95a;
-
-  cursor: pointer;
-
-  font-size: clamp(12px, 1vw, 17px);
-}
-
-/* =========================================================
-   MESSAGE
-   ========================================================= */
-
-.message {
-  min-height: 1.5em;
-
-  margin-top: 1%;
-
-  font-size: clamp(13px, 1.1vw, 19px);
-
-  font-weight: 900;
-
-  text-align: center;
-}
-
-.message.correct {
-  color: #67e77e;
-}
-
-.message.wrong {
-  color: #ff7777;
+  letter-spacing: .08em;
 }
 
 /* =========================================================
    RPG PANEL
-   ========================================================= */
+========================================================= */
 
 .panel {
+  position: relative;
+
   width: 100%;
 
-  padding: 2%;
+  padding: 2.2%;
 
-  border: 2px solid #334e69;
-  border-radius: 14px;
+  border: 3px solid #3e6688;
+
+  border-radius: 12px;
 
   background:
-    rgba(7,18,32,.82);
+    linear-gradient(
+      145deg,
+      rgba(12,34,56,.97),
+      rgba(5,18,31,.97)
+    );
+
+  box-shadow:
+    inset 0 0 0 2px #102b45,
+    inset 0 0 25px rgba(0,0,0,.4),
+    0 7px 0 #06101c,
+    0 12px 25px rgba(0,0,0,.35);
+}
+
+.panel::before {
+  content: "";
+
+  position: absolute;
+
+  top: -3px;
+  left: 20px;
+
+  width: 70px;
+  height: 3px;
+
+  background: #ffd85a;
+}
+
+.panel h2 {
+  margin: 0 0 2%;
+
+  color: #ffd85a;
+
+  font-size: clamp(22px, 2.3vw, 38px);
+
+  text-shadow: 3px 3px 0 #07111f;
 }
 
 /* =========================================================
-   TABLET / iPAD
-   ========================================================= */
+   HOME HERO PANEL
+========================================================= */
+
+.hero-title + .subtitle + .panel {
+  max-width: 850px !important;
+
+  margin: 3% auto !important;
+
+  padding: 3% 5%;
+}
+
+/* =========================================================
+   NAME
+========================================================= */
+
+.name {
+  width: min(70%, 420px);
+
+  padding: 11px 14px;
+
+  border: 3px solid #4c7497;
+
+  outline: none;
+
+  background: #061321;
+
+  color: #ffffff;
+
+  border-radius: 5px;
+
+  text-align: center;
+
+  font-family: inherit;
+
+  font-size: clamp(14px, 1.3vw, 22px);
+
+  font-weight: bold;
+
+  box-shadow:
+    inset 0 0 12px rgba(0,0,0,.6);
+}
+
+.name::placeholder {
+  color: #6d8295;
+}
+
+.name:focus {
+  border-color: #ffd85a;
+
+  box-shadow:
+    0 0 0 2px rgba(255,216,90,.18),
+    inset 0 0 12px rgba(0,0,0,.6);
+}
+
+/* =========================================================
+   HERO SELECTION
+========================================================= */
+
+.gender-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 2%;
+
+  margin: 3% 0 2%;
+}
+
+.gender {
+  position: relative;
+
+  min-height: clamp(70px, 9vw, 120px);
+
+  border: 3px solid #385a77;
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #163650,
+      #0b2034
+    );
+
+  color: #d9e9f7;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: clamp(15px, 1.5vw, 25px);
+
+  font-weight: 900;
+
+  transition: .15s ease;
+
+  box-shadow:
+    inset 0 0 0 2px #102b44,
+    0 5px 0 #06101b;
+}
+
+.gender:hover {
+  border-color: #76a8ce;
+
+  transform: translateY(-2px);
+}
+
+.gender.selected {
+  border-color: #ffd85a;
+
+  color: #ffd85a;
+
+  background:
+    linear-gradient(
+      180deg,
+      #294f70,
+      #122f49
+    );
+
+  box-shadow:
+    inset 0 0 0 2px #5c7182,
+    0 0 0 2px rgba(255,216,90,.15),
+    0 0 22px rgba(255,216,90,.2),
+    0 5px 0 #06101b;
+}
+
+.check {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: clamp(10px, .9vw, 15px);
+
+  color: #fff2a4;
+
+  letter-spacing: .05em;
+}
+
+#heroStatus {
+  margin: 1% 0;
+
+  color: #91b0c9;
+
+  font-size: clamp(12px, 1vw, 17px);
+}
+
+/* =========================================================
+   RPG BUTTONS
+========================================================= */
+
+.primary,
+.secondary {
+  border: 3px solid;
+
+  border-radius: 6px;
+
+  font-family: inherit;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition: .12s ease;
+}
+
+.primary {
+  min-width: 230px;
+
+  margin-top: 2%;
+
+  padding: 12px 24px;
+
+  border-color: #ffe27a;
+
+  background:
+    linear-gradient(
+      180deg,
+      #e8b83c,
+      #a96c12
+    );
+
+  color: #fff;
+
+  font-size: clamp(14px, 1.4vw, 23px);
+
+  text-shadow:
+    2px 2px 0 #5b3600;
+
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.35),
+    0 5px 0 #553400,
+    0 0 15px rgba(255,216,90,.12);
+}
+
+.primary:hover {
+  filter: brightness(1.15);
+
+  transform: translateY(-2px);
+}
+
+.primary:active {
+  transform: translateY(3px);
+
+  box-shadow:
+    0 2px 0 #553400;
+}
+
+.secondary {
+  padding: 9px 16px;
+
+  border-color: #4b7192;
+
+  background:
+    linear-gradient(
+      180deg,
+      #183955,
+      #0c2136
+    );
+
+  color: #d8e8f5;
+
+  font-size: clamp(11px, 1vw, 17px);
+
+  box-shadow:
+    0 4px 0 #06111d;
+}
+
+.secondary:hover {
+  border-color: #78a6c8;
+
+  color: #fff;
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   WORLD MAP
+========================================================= */
+
+.quest-head {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 2%;
+
+  margin-bottom: 2%;
+}
+
+.quest-head h1 {
+  margin: 0;
+
+  color: #ffd85a;
+
+  font-size: clamp(22px, 2.5vw, 42px);
+
+  text-shadow:
+    3px 3px 0 #07111f;
+}
+
+.tag {
+  display: inline-block;
+
+  padding: 7px 12px;
+
+  border: 2px solid #527595;
+
+  background: #091a2b;
+
+  color: #9ec7e5;
+
+  font-size: clamp(11px, 1vw, 17px);
+
+  font-weight: 900;
+}
+
+/* =========================================================
+   CHAPTERS
+========================================================= */
+
+.chapter-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  grid-template-rows:
+    repeat(2, 1fr);
+
+  gap: 2%;
+
+  height: 68%;
+}
+
+.chapter {
+  min-width: 0;
+
+  border: 3px solid #3e6381;
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #173957,
+      #0a2035
+    );
+
+  color: #fff;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  padding: 4%;
+
+  position: relative;
+
+  overflow: hidden;
+
+  box-shadow:
+    inset 0 0 0 2px #102b45,
+    0 5px 0 #06111d;
+
+  transition: .15s ease;
+}
+
+.chapter::after {
+  content: "✦";
+
+  position: absolute;
+
+  right: 7%;
+  top: 6%;
+
+  color: rgba(255,216,90,.25);
+
+  font-size: 22px;
+}
+
+.chapter:hover {
+  border-color: #7ca8c8;
+
+  transform: translateY(-3px);
+
+  background:
+    linear-gradient(
+      145deg,
+      #1d4666,
+      #0d2942
+    );
+}
+
+.chapter.ready {
+  border-color: #4f8bb2;
+}
+
+.chapter.locked {
+  opacity: .45;
+
+  filter: grayscale(.6);
+
+  cursor: not-allowed;
+}
+
+.chapter h3 {
+  margin: 0 0 7%;
+
+  color: #78b8dc;
+
+  font-size: clamp(12px, 1vw, 18px);
+}
+
+.chapter > div {
+  font-size: clamp(13px, 1.3vw, 22px);
+
+  font-weight: 900;
+
+  line-height: 1.25;
+}
+
+.chapter .stars {
+  margin-top: 8%;
+
+  color: #ffd85a;
+
+  letter-spacing: 2px;
+}
+
+.chapter .meta {
+  margin-top: 6%;
+
+  color: #8ba5ba;
+
+  font-size: clamp(10px, .8vw, 14px);
+}
+
+/* =========================================================
+   MENU ROW
+========================================================= */
+
+.menu-row {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+}
+
+/* =========================================================
+   MODES
+========================================================= */
+
+.mode-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 12px;
+
+  margin: 3% 0;
+}
+
+.mode {
+  padding: 15px;
+
+  min-height: 75px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      145deg,
+      #112d47,
+      #091b2d
+    );
+}
+
+.mode-badge {
+  color: #ffd85a;
+
+  font-weight: 900;
+
+  font-size: clamp(12px, 1vw, 17px);
+}
+
+.mode small {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #90abc0;
+
+  font-size: clamp(10px, .85vw, 14px);
+}
+
+/* =========================================================
+   QUESTION
+========================================================= */
+
+.prompt {
+  margin: 2% 0;
+
+  color: #9bb6cc;
+
+  text-align: center;
+
+  font-size: clamp(12px, 1.1vw, 18px);
+}
+
+.question {
+  margin: 2% 0;
+
+  color: #ffffff;
+
+  text-align: center;
+
+  font-size: clamp(25px, 3.2vw, 55px);
+
+  font-weight: 900;
+
+  line-height: 1.15;
+
+  text-shadow:
+    3px 3px 0 #07111f;
+}
+
+/* =========================================================
+   CHOICES
+========================================================= */
+
+.choices {
+  width: min(90%, 850px);
+
+  margin: 2% auto;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
+}
+
+.choice {
+  min-height: clamp(55px, 6vw, 90px);
+
+  border: 3px solid #3c6484;
+
+  border-radius: 7px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #173a58,
+      #0c243b
+    );
+
+  color: #fff;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: clamp(14px, 1.25vw, 22px);
+
+  font-weight: 900;
+
+  box-shadow:
+    0 5px 0 #06111d;
+
+  transition: .12s ease;
+}
+
+.choice:hover {
+  border-color: #7bb1d4;
+
+  transform: translateY(-2px);
+}
+
+.choice.correct {
+  border-color: #65e07d;
+
+  background: #15502c;
+}
+
+.choice.wrong {
+  border-color: #ff6868;
+
+  background: #5a2020;
+}
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+.timer {
+  min-width: 65px;
+
+  padding: 8px 14px;
+
+  border: 3px solid #52718c;
+
+  background: #071521;
+
+  color: #ffd85a;
+
+  text-align: center;
+
+  font-size: clamp(15px, 1.4vw, 24px);
+
+  font-weight: 900;
+
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.7);
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress {
+  width: 100%;
+
+  height: 12px;
+
+  margin: 1% 0;
+
+  border: 2px solid #385b77;
+
+  background: #06121f;
+
+  overflow: hidden;
+}
+
+.progress div {
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #39b7e8,
+      #ffd85a
+    );
+
+  box-shadow:
+    0 0 8px rgba(74,200,255,.4);
+
+  transition: width .25s ease;
+}
+
+/* =========================================================
+   SCRAMBLE
+========================================================= */
+
+.scramble {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin: 2% auto;
+
+  max-width: 900px;
+}
+
+.letter {
+  width: clamp(38px, 4vw, 65px);
+  height: clamp(38px, 4vw, 65px);
+
+  border: 3px solid #4a7090;
+
+  background: #102e49;
+
+  color: #fff;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: clamp(17px, 1.8vw, 30px);
+
+  font-weight: 900;
+
+  box-shadow: 0 4px 0 #06111d;
+}
+
+.letter:hover {
+  border-color: #ffd85a;
+}
+
+.letter:disabled {
+  opacity: .25;
+}
+
+.answer {
+  min-height: 45px;
+
+  margin: 2% auto;
+
+  width: min(90%, 700px);
+
+  border-bottom: 3px solid #4b6c86;
+
+  color: #ffd85a;
+
+  text-align: center;
+
+  font-size: clamp(20px, 2vw, 36px);
+
+  font-weight: 900;
+
+  letter-spacing: .12em;
+}
+
+/* =========================================================
+   FEEDBACK
+========================================================= */
+
+.feedback {
+  min-height: 30px;
+
+  margin-top: 2%;
+
+  text-align: center;
+
+  color: #ffd85a;
+
+  font-size: clamp(13px, 1.1vw, 19px);
+
+  font-weight: 900;
+}
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+}
+
+.result .panel {
+  max-width: 850px;
+
+  margin: auto;
+}
+
+.big {
+  color: #ffd85a;
+
+  font-size: clamp(35px, 5vw, 70px);
+
+  letter-spacing: 5px;
+
+  text-shadow:
+    0 0 15px rgba(255,216,90,.3);
+}
+
+/* =========================================================
+   WORD BOOK
+========================================================= */
+
+.wordbook {
+  height: 78%;
+
+  overflow: hidden;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 10px;
+}
+
+.word {
+  padding: 14px;
+
+  border: 2px solid #345775;
+
+  background:
+    linear-gradient(
+      145deg,
+      #112f49,
+      #081c2e
+    );
+
+  min-height: 0;
+}
+
+.word strong {
+  display: block;
+
+  color: #ffd85a;
+
+  font-size: clamp(13px, 1.2vw, 20px);
+}
+
+.word span {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #9db4c8;
+
+  font-size: clamp(11px, .9vw, 16px);
+}
+
+.word .stars {
+  margin-top: 8px;
+
+  color: #ffd85a;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+  margin-top: 2%;
+
+  text-align: center;
+
+  color: #5f7b91;
+
+  font-size: clamp(9px, .75vw, 13px);
+}
+
+/* =========================================================
+   SMALL TEXT
+========================================================= */
+
+.small {
+  color: #8da8bd;
+
+  font-size: clamp(11px, .9vw, 16px);
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
 
 @media (max-width: 900px) {
-
-  body {
-    overflow: hidden;
-  }
-
-  .shell {
-    width: 100vw;
-    height: 100vh;
-
-    align-items: stretch;
-    justify-content: stretch;
-  }
 
   .game {
     width: 100vw;
@@ -1107,46 +1103,37 @@ button:active {
 
     border: 0;
     border-radius: 0;
-
-    overflow: hidden;
   }
 
   .top {
     height: 9vh;
-
-    min-height: 54px;
-
-    padding: 0 3%;
+    min-height: 55px;
   }
 
   .content {
     height: 91vh;
 
     padding: 3%;
-
-    overflow: hidden;
   }
 
   .chapter-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr 1fr;
+
+    grid-template-rows:
+      repeat(3, 1fr);
+
+    height: 72%;
   }
 
-  .wordbook,
-  .review-list,
-  .achievement-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .mode-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .wordbook {
+    grid-template-columns: 1fr 1fr;
   }
 
 }
 
 /* =========================================================
-   PHONE
-   ========================================================= */
+   MOBILE
+========================================================= */
 
 @media (max-width: 600px) {
 
@@ -1156,6 +1143,7 @@ button:active {
 
   .shell {
     width: 100%;
+
     min-height: 100vh;
     height: auto;
 
@@ -1178,278 +1166,137 @@ button:active {
   }
 
   .top {
-    height: 64px;
-    min-height: 64px;
+    height: 62px;
+
+    min-height: 62px;
 
     padding: 0 4%;
   }
 
-  .top h1,
-  .top .title {
-    font-size: 18px;
+  .logo {
+    font-size: 16px;
+  }
+
+  .score {
+    padding: 6px 9px;
+
+    font-size: 11px;
   }
 
   .content {
     height: auto;
-    min-height: calc(100vh - 64px);
+    min-height: calc(100vh - 62px);
 
     padding: 5% 4%;
 
     overflow: visible;
   }
 
-  .hero {
-    min-height: calc(100vh - 100px);
+  .hero-title {
+    font-size: 38px;
+
+    margin-top: 4%;
   }
 
-  .hero h2 {
-    font-size: clamp(28px, 9vw, 44px);
+  .subtitle {
+    font-size: 11px;
+
+    line-height: 1.5;
   }
 
-  .hero p {
-    font-size: 14px;
-    margin-bottom: 6%;
+  .hero-title + .subtitle + .panel {
+    margin-top: 8% !important;
+
+    padding: 8% 5%;
   }
 
-  .name-input {
+  .panel {
+    padding: 5%;
+  }
+
+  .name {
     width: 100%;
-    padding: 14px;
-    margin-bottom: 5%;
 
     font-size: 16px;
   }
 
   .gender-grid {
-    width: 100%;
     gap: 3%;
 
-    margin-bottom: 5%;
+    margin: 7% 0 4%;
   }
 
-  .gender-btn {
-    min-height: 80px;
+  .gender {
+    min-height: 90px;
 
-    font-size: 17px;
+    font-size: 15px;
   }
 
-  .primary-btn {
+  .primary {
     width: 100%;
+
     min-width: 0;
 
-    padding: 15px 20px;
+    padding: 14px 16px;
 
-    font-size: 18px;
+    font-size: 16px;
   }
 
-  .map-title {
-    margin-bottom: 5%;
+  .quest-head {
+    align-items: flex-start;
 
-    font-size: 27px;
+    flex-wrap: wrap;
+  }
+
+  .quest-head h1 {
+    font-size: 25px;
   }
 
   .chapter-grid {
-    display: grid;
+    height: auto;
 
     grid-template-columns: 1fr;
+
     grid-template-rows: none;
 
-    gap: 14px;
+    gap: 12px;
   }
 
-  .chapter-card {
+  .chapter {
     min-height: 115px;
 
-    padding: 18px;
-  }
-
-  .chapter-name {
-    font-size: 18px;
-  }
-
-  .quest-header {
-    flex-direction: column;
-    align-items: flex-start;
-
-    margin-bottom: 4%;
-  }
-
-  .quest-title {
-    width: 100%;
-
-    white-space: normal;
-
-    font-size: 23px;
-  }
-
-  .quest-meta {
-    width: 100%;
-
-    justify-content: space-between;
-
-    font-size: 13px;
+    padding: 20px;
   }
 
   .mode-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    gap: 10px;
-
-    margin-bottom: 14px;
-  }
-
-  .mode-btn {
-    min-height: 54px;
-
-    font-size: 13px;
-  }
-
-  .question-panel {
-    min-height: 480px;
-
-    padding: 20px 14px;
-
-    overflow: visible;
-  }
-
-  .question {
-    font-size: clamp(27px, 8vw, 38px);
-
-    margin-bottom: 12px;
-  }
-
-  .question-meaning {
-    font-size: 15px;
-
-    margin-bottom: 18px;
-  }
-
-  .timer-wrap {
-    width: 100%;
-
-    margin-bottom: 18px;
-  }
-
-  .timer {
-    height: 12px;
+    grid-template-columns: 1fr 1fr;
   }
 
   .choices {
     width: 100%;
 
     grid-template-columns: 1fr;
-
-    gap: 10px;
-
-    flex: none;
   }
 
-  .choice {
-    min-height: 58px;
-
-    padding: 12px;
-
-    font-size: 16px;
+  .question {
+    font-size: 30px;
   }
 
-  .scramble {
-    width: 100%;
+  .wordbook {
+    height: auto;
 
-    gap: 7px;
-  }
+    overflow: visible;
 
-  .letter-btn {
-    width: 43px;
-    height: 43px;
-
-    font-size: 18px;
-  }
-
-  .answer-display {
-    width: 100%;
-
-    min-height: 48px;
-
-    font-size: 22px;
-
-    margin-bottom: 18px;
-  }
-
-  .progress {
-    margin-top: 15px;
-  }
-
-  .wordbook,
-  .review-list,
-  .achievement-grid {
     grid-template-columns: 1fr;
 
     gap: 10px;
-
-    overflow: visible;
-  }
-
-  .word-card,
-  .review-card,
-  .achievement {
-    min-height: 95px;
-
-    padding: 18px;
-  }
-
-  .back-btn {
-    margin-bottom: 18px;
-
-    padding: 9px 13px;
-
-    font-size: 14px;
-  }
-
-  .result h2 {
-    font-size: 36px;
   }
 
 }
 
 /* =========================================================
-   PHONE LANDSCAPE
-   ========================================================= */
-
-@media (max-width: 900px) and (orientation: landscape) {
-
-  .game {
-    width: 100vw;
-    height: 100vh;
-  }
-
-  .top {
-    height: 52px;
-    min-height: 52px;
-  }
-
-  .content {
-    height: calc(100vh - 52px);
-
-    padding: 2%;
-  }
-
-  .chapter-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-  }
-
-  .chapter-card {
-    min-height: 0;
-  }
-
-  .mode-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-}
-
-/* =========================================================
-   SAFETY: NEVER SHOW DESKTOP SCROLLBARS
-   ========================================================= */
+   DESKTOP SAFETY
+========================================================= */
 
 @media (min-width: 601px) {
 
@@ -1459,26 +1306,6 @@ button:active {
   .game,
   .content {
     overflow: hidden !important;
-  }
-
-}
-
-/* =========================================================
-   TOUCH DEVICES
-   ========================================================= */
-
-@media (hover: none) {
-
-  button:hover {
-    transform: none;
-  }
-
-  .chapter-card:hover {
-    transform: none;
-  }
-
-  .choice:hover {
-    transform: none;
   }
 
 }
