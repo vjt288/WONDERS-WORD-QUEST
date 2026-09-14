@@ -1,7 +1,7 @@
 /* =========================================================
    WONDERS WORD QUEST
-   V8.5 — 16:9 RPG VIEWPORT + RWD
-========================================================= */
+   V8.6 — TRUE 16:9 RPG VIEWPORT + MOBILE RWD
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -22,914 +22,1078 @@ body {
   overflow: hidden;
 }
 
-button,
-input {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
 /* =========================================================
    OUTER SCREEN
-========================================================= */
-
-#app {
-  width: 100%;
-  height: 100%;
-}
+   ========================================================= */
 
 .shell {
   width: 100vw;
   height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background:
-    radial-gradient(
-      circle at center,
-      #132943 0%,
-      #091522 55%,
-      #050b12 100%
-    );
-}
-
-/* =========================================================
-   16:9 RPG VIEWPORT
-========================================================= */
-
-.game {
-  position: relative;
-
-  /* 核心：保持真正 16:9 */
-  aspect-ratio: 16 / 9;
-
-  /* 先以寬度為主 */
-  width: min(100vw, 177.7778vh);
-
-  /* 不超過視窗 */
-  max-width: 100vw;
-  max-height: 100vh;
-
-  /* 高度由 aspect-ratio 自動計算 */
-  height: auto;
-
-  border: 3px solid #5d718c;
-  border-radius: clamp(8px, 1vw, 18px);
-
-  background: #0b1728;
-
-  box-shadow:
-    0 20px 70px rgba(0, 0, 0, .55);
-
+  justify-content: center;
   overflow: hidden;
 }
 
 /* =========================================================
+   MAIN GAME
+   Desktop = TRUE 16:9
+   ========================================================= */
+
+.game {
+  position: relative;
+
+  width: min(100vw, 177.7777778vh);
+  height: min(100vh, 56.25vw);
+
+  aspect-ratio: 16 / 9;
+
+  max-width: 100vw;
+  max-height: 100vh;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at 50% 20%, #17375e 0%, #0b1c32 45%, #07111f 100%);
+
+  border: 2px solid #304968;
+  border-radius: 18px;
+
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.04),
+    0 20px 60px rgba(0,0,0,.55);
+}
+
+/* =========================================================
    TOP BAR
-========================================================= */
+   ========================================================= */
 
 .top {
+  width: 100%;
   height: 9%;
-  min-height: 54px;
-
-  padding:
-    0 clamp(16px, 2.5vw, 42px);
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  gap: 20px;
+  padding: 0 2.2%;
 
-  border-bottom: 2px solid #334963;
+  border-bottom: 2px solid rgba(255,255,255,.10);
 
   background:
     linear-gradient(
       180deg,
-      #14263d,
-      #0d1b2d
+      rgba(22,48,78,.96),
+      rgba(10,26,45,.96)
     );
+
+  position: relative;
+  z-index: 10;
 }
 
-.logo {
-  font-size: clamp(16px, 2vw, 30px);
+.top h1,
+.top .title {
+  margin: 0;
+
+  font-size: clamp(18px, 2vw, 34px);
   font-weight: 900;
-  letter-spacing: 1px;
-  line-height: 1;
+
+  letter-spacing: .08em;
+
+  text-shadow:
+    2px 2px 0 #000,
+    0 0 12px rgba(255,255,255,.15);
 }
 
-.score {
-  flex: 0 0 auto;
+.top button {
+  min-width: 42px;
+  min-height: 42px;
 
-  font-size: clamp(12px, 1.3vw, 21px);
-  font-weight: 900;
+  border: 2px solid #5b7595;
+  border-radius: 10px;
 
-  white-space: nowrap;
+  background: #10263f;
+  color: #ffffff;
+
+  cursor: pointer;
+
+  font-size: clamp(16px, 1.4vw, 24px);
 }
 
 /* =========================================================
-   CONTENT
-========================================================= */
+   CONTENT AREA
+   IMPORTANT:
+   Desktop 不允許整個遊戲上下滾動
+   ========================================================= */
 
 .content {
   width: 100%;
   height: 91%;
 
-  margin: 0 auto;
+  overflow: hidden;
 
-  padding:
-    clamp(14px, 2.5vw, 42px)
-    clamp(16px, 4vw, 60px);
+  position: relative;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding: 2.2%;
 
-  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+button,
+input {
+  font-family: inherit;
+}
+
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.hidden {
+  display: none !important;
 }
 
 .center {
   text-align: center;
 }
 
-/* =========================================================
-   TYPOGRAPHY
-========================================================= */
-
-h1 {
-  margin-top: 0;
-  font-size: clamp(22px, 3vw, 44px);
+.muted {
+  color: #aebed0;
 }
 
-h2 {
-  font-size: clamp(19px, 2.3vw, 32px);
-}
-
-h3 {
-  font-size: clamp(15px, 1.7vw, 24px);
-}
-
-p {
-  line-height: 1.5;
+.small {
+  font-size: clamp(12px, 1vw, 17px);
 }
 
 /* =========================================================
-   HOME TITLE
-========================================================= */
+   HERO / HOME
+   ========================================================= */
 
-.hero-title {
-  margin-top: clamp(15px, 5vh, 65px);
+.hero {
+  width: 100%;
+  flex: 1;
 
-  font-size:
-    clamp(38px, 7vw, 100px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-  line-height: .9;
+  text-align: center;
+
+  min-height: 0;
+}
+
+.hero h2 {
+  margin: 0 0 1.2%;
+
+  font-size: clamp(30px, 4vw, 70px);
+  line-height: 1;
 
   font-weight: 1000;
+  letter-spacing: .08em;
 
-  letter-spacing:
-    clamp(1px, .35vw, 6px);
+  color: #ffd95a;
 
   text-shadow:
-    5px 5px 0 #243b57;
+    4px 4px 0 #111,
+    0 0 18px rgba(255,217,90,.22);
 }
 
-.subtitle {
-  margin-top: 15px;
+.hero p {
+  margin: 0 0 2%;
 
-  color: #9fb3cc;
-
-  font-size:
-    clamp(9px, 1.1vw, 17px);
-
-  letter-spacing: 1px;
-}
-
-/* =========================================================
-   PANEL
-========================================================= */
-
-.panel {
-  width: 100%;
-  max-width: 100%;
-
-  padding:
-    clamp(13px, 2vw, 30px);
-
-  border:
-    2px solid #405975;
-
-  border-radius:
-    clamp(7px, .8vw, 14px);
-
-  background:
-    linear-gradient(
-      145deg,
-      #14283f,
-      #102137
-    );
-}
-
-.panel.center {
-  text-align: center;
+  font-size: clamp(14px, 1.4vw, 24px);
+  color: #dbe7f5;
 }
 
 /* =========================================================
    NAME INPUT
-========================================================= */
+   ========================================================= */
 
-.name {
-  display: block;
+.name-input {
+  width: min(90%, 460px);
 
-  width: min(100%, 500px);
+  padding: 1.2% 2%;
 
-  min-height:
-    clamp(44px, 4.5vw, 62px);
-
-  margin:
-    14px auto;
-
-  padding:
-    8px 15px;
-
-  border:
-    2px solid #5d718c;
-
-  border-radius: 8px;
-
-  background: #081321;
-
-  color: #ffffff;
+  border: 3px solid #48698c;
+  border-radius: 12px;
 
   outline: none;
 
+  background: #08192c;
+  color: #ffffff;
+
   text-align: center;
 
-  font-size:
-    clamp(15px, 1.6vw, 23px);
+  font-size: clamp(16px, 1.5vw, 25px);
+
+  margin-bottom: 2%;
 }
 
-.name:focus {
-  border-color: #9cc8ff;
+.name-input:focus {
+  border-color: #ffd95a;
+  box-shadow: 0 0 16px rgba(255,217,90,.2);
 }
 
 /* =========================================================
-   HERO SELECT
-========================================================= */
+   GENDER SELECTION
+   ========================================================= */
 
 .gender-grid {
-  width: min(100%, 700px);
-
-  margin:
-    18px auto 8px;
+  width: min(90%, 620px);
 
   display: grid;
+  grid-template-columns: 1fr 1fr;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  gap: 2%;
 
-  gap:
-    clamp(8px, 1.5vw, 18px);
+  margin-bottom: 2%;
 }
 
-.gender {
-  min-height:
-    clamp(65px, 8vw, 110px);
+.gender-btn {
+  min-height: clamp(60px, 8vw, 110px);
 
-  padding: 10px;
+  border: 3px solid #405a76;
+  border-radius: 16px;
 
-  border:
-    3px solid #405975;
-
-  border-radius: 11px;
-
-  background: #172b45;
+  background:
+    linear-gradient(180deg, #17314f, #0d2035);
 
   color: #ffffff;
 
-  font-size:
-    clamp(15px, 1.8vw, 27px);
+  cursor: pointer;
 
+  font-size: clamp(16px, 1.7vw, 28px);
   font-weight: 900;
 
   transition:
     transform .12s ease,
     border-color .12s ease,
+    box-shadow .12s ease,
     background .12s ease;
 }
 
-.gender:hover {
+.gender-btn:hover {
+  border-color: #8aa6c4;
   transform: translateY(-2px);
 }
 
-.gender.selected {
-  border-color: #ffd34e;
+.gender-btn.selected {
+  border-color: #ffd95a;
 
-  background: #304866;
+  background:
+    linear-gradient(180deg, #385a78, #173652);
 
   box-shadow:
-    0 0 0 3px
-    rgba(255,211,78,.15);
-}
+    0 0 0 3px rgba(255,217,90,.18),
+    0 0 20px rgba(255,217,90,.18);
 
-.check {
-  display: block;
-
-  margin-top: 5px;
-
-  color: #ffd34e;
-
-  font-size:
-    clamp(10px, 1vw, 15px);
+  color: #ffd95a;
 }
 
 /* =========================================================
-   BUTTONS
-========================================================= */
+   PRIMARY BUTTON
+   ========================================================= */
 
-.primary,
-.secondary {
-  min-height:
-    clamp(43px, 4vw, 58px);
+.primary-btn {
+  min-width: min(90%, 360px);
 
-  padding:
-    9px clamp(14px, 2vw, 24px);
+  padding: 1.3% 3%;
 
-  border-radius: 8px;
+  border: 3px solid #ffd95a;
+  border-radius: 14px;
 
-  font-weight: 900;
-
-  transition:
-    transform .12s ease,
-    filter .12s ease;
-}
-
-.primary {
-  margin-top: 15px;
-
-  background: #e9b949;
-
-  color: #101010;
-
-  border:
-    2px solid #ffdb75;
-}
-
-.secondary {
-  background: #1a2d45;
+  background:
+    linear-gradient(180deg, #e3a927, #9b6510);
 
   color: #ffffff;
 
-  border:
-    2px solid #5d718c;
+  cursor: pointer;
+
+  font-size: clamp(16px, 1.6vw, 28px);
+  font-weight: 1000;
+
+  text-shadow: 2px 2px 0 #3c2500;
+
+  box-shadow:
+    0 5px 0 #543700,
+    0 0 18px rgba(255,217,90,.15);
 }
 
-.primary:hover,
-.secondary:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.08);
+.primary-btn:hover {
+  filter: brightness(1.12);
+}
+
+/* =========================================================
+   WORLD MAP
+   ========================================================= */
+
+.map-title {
+  flex: 0 0 auto;
+
+  text-align: center;
+
+  margin: 0 0 1.5%;
+
+  font-size: clamp(22px, 2.4vw, 42px);
+  font-weight: 1000;
+
+  color: #ffd95a;
+
+  text-shadow: 3px 3px 0 #000;
+}
+
+.chapter-grid {
+  width: 100%;
+  flex: 1;
+
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  grid-template-rows:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 1.5%;
+}
+
+.chapter-card {
+  min-width: 0;
+  min-height: 0;
+
+  padding: 3%;
+
+  border: 3px solid #38536f;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(145deg, #173450, #0b1c30);
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  overflow: hidden;
+
+  transition:
+    transform .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease;
+}
+
+.chapter-card:hover {
+  transform: translateY(-3px);
+  border-color: #6f91b2;
+}
+
+.chapter-card.locked {
+  cursor: not-allowed;
+
+  filter: grayscale(.55);
+
+  opacity: .55;
+}
+
+.chapter-card.ready {
+  border-color: #55c8ff;
+
+  box-shadow:
+    0 0 18px rgba(85,200,255,.13);
+}
+
+.chapter-card.completed {
+  border-color: #ffd95a;
+}
+
+.chapter-number {
+  font-size: clamp(12px, 1vw, 18px);
+  color: #8fa8c1;
+  margin-bottom: 3%;
+}
+
+.chapter-name {
+  font-size: clamp(14px, 1.45vw, 25px);
+  font-weight: 1000;
+  line-height: 1.2;
+}
+
+.chapter-status {
+  margin-top: 4%;
+
+  font-size: clamp(12px, 1vw, 18px);
+
+  color: #ffd95a;
 }
 
 /* =========================================================
    QUEST HEADER
-========================================================= */
+   ========================================================= */
 
-.quest-head {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 15px;
-
-  margin-bottom:
-    clamp(14px, 2vw, 28px);
-}
-
-.tag {
-  display: inline-block;
-
-  max-width: 100%;
-
-  padding:
-    6px 11px;
-
-  border:
-    1px solid #526a84;
-
-  border-radius: 999px;
-
-  background: #172a42;
-
-  color: #c9d7e8;
-
-  font-size:
-    clamp(10px, 1vw, 16px);
-
-  overflow-wrap: anywhere;
-}
-
-/* =========================================================
-   CHAPTER MAP
-========================================================= */
-
-.chapter-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap:
-    clamp(9px, 1.5vw, 20px);
-}
-
-.chapter {
-  width: 100%;
-
-  min-height:
-    clamp(115px, 14vw, 205px);
-
-  padding:
-    clamp(12px, 1.7vw, 24px);
-
-  border:
-    3px solid #526a84;
-
-  border-radius: 11px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #182f4a,
-      #11243a
-    );
-
-  color: #ffffff;
-
-  text-align: left;
-
-  transition:
-    transform .12s ease,
-    border-color .12s ease;
-}
-
-.chapter.ready {
-  border-color: #6d88a8;
-}
-
-.chapter.ready:hover {
-  transform: translateY(-3px);
-  border-color: #ffd34e;
-}
-
-.chapter.locked {
-  opacity: .4;
-}
-
-.stars {
-  margin-top: 7px;
-
-  color: #ffd34e;
-
-  font-size:
-    clamp(13px, 1.4vw, 21px);
-
-  letter-spacing: 2px;
-}
-
-.meta,
-.small,
-.footer {
-  color: #91a7c0;
-
-  font-size:
-    clamp(10px, .95vw, 15px);
-
-  line-height: 1.45;
-}
-
-.footer {
-  margin-top: 18px;
-  text-align: center;
-}
-
-/* =========================================================
-   MODE GRID
-========================================================= */
-
-.mode-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap:
-    clamp(8px, 1.2vw, 16px);
-
-  margin:
-    18px 0;
-}
-
-.mode {
-  min-height:
-    clamp(70px, 8vw, 110px);
-
-  padding:
-    clamp(10px, 1.4vw, 18px);
-
-  text-align: center;
-}
-
-.mode-badge {
-  display: inline-block;
-
-  margin-bottom: 7px;
-
-  padding:
-    6px 8px;
-
-  border-radius: 6px;
-
-  background: #203852;
-
-  border:
-    1px solid #5a7390;
-
-  font-size:
-    clamp(9px, .95vw, 15px);
-
-  font-weight: 900;
-}
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-.question {
-  margin:
-    clamp(15px, 3vw, 36px)
-    auto
-    10px;
-
-  font-size:
-    clamp(25px, 4.5vw, 62px);
-
-  font-weight: 1000;
-
-  line-height: 1.1;
-
-  overflow-wrap: anywhere;
-}
-
-.prompt {
-  margin-bottom: 14px;
-
-  color: #afc0d4;
-
-  font-size:
-    clamp(12px, 1.35vw, 20px);
-}
-
-/* =========================================================
-   CHOICES
-========================================================= */
-
-.choices {
-  width: min(100%, 880px);
-
-  margin: 16px auto 0;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap:
-    clamp(8px, 1.2vw, 16px);
-}
-
-.choice {
-  width: 100%;
-
-  min-height:
-    clamp(50px, 6vw, 80px);
-
-  padding:
-    9px 12px;
-
-  border:
-    2px solid #536b87;
-
-  border-radius: 9px;
-
-  background: #182e49;
-
-  color: #ffffff;
-
-  font-size:
-    clamp(13px, 1.55vw, 23px);
-
-  font-weight: 800;
-
-  overflow-wrap: anywhere;
-}
-
-.choice:hover {
-  border-color: #ffd34e;
-  background: #223c5c;
-}
-
-/* =========================================================
-   TIMER
-========================================================= */
-
-.timer {
+.quest-header {
   flex: 0 0 auto;
 
-  min-width:
-    clamp(50px, 6vw, 82px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  padding:
-    7px 11px;
+  gap: 2%;
 
-  border:
-    2px solid #d18c48;
-
-  border-radius: 8px;
-
-  background: #251d17;
-
-  color: #ffd34e;
-
-  text-align: center;
-
-  font-size:
-    clamp(19px, 2.5vw, 36px);
-
-  font-weight: 1000;
+  margin-bottom: 1.5%;
 }
 
-.feedback {
-  min-height: 28px;
+.quest-title {
+  min-width: 0;
 
-  margin-top: 12px;
+  font-size: clamp(18px, 2vw, 34px);
+  font-weight: 1000;
 
-  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  font-size:
-    clamp(14px, 1.6vw, 24px);
+.quest-meta {
+  flex: 0 0 auto;
 
-  font-weight: 900;
+  display: flex;
+  gap: 1vw;
+
+  font-size: clamp(12px, 1vw, 18px);
 }
 
 /* =========================================================
-   PROGRESS
-========================================================= */
+   MODE SELECTION
+   ========================================================= */
 
-.progress {
+.mode-grid {
   width: 100%;
 
-  height:
-    clamp(7px, .7vw, 10px);
+  display: grid;
 
-  border-radius: 999px;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
 
-  background: #1b2d43;
+  gap: 1.5%;
+
+  margin-bottom: 1.5%;
+}
+
+.mode-btn {
+  min-height: clamp(48px, 6vw, 80px);
+
+  border: 2px solid #3d5873;
+  border-radius: 12px;
+
+  background: #10263f;
+  color: #ffffff;
+
+  cursor: pointer;
+
+  font-size: clamp(12px, 1.1vw, 19px);
+  font-weight: 900;
+}
+
+.mode-btn:hover {
+  border-color: #75a1ca;
+}
+
+.mode-btn.selected {
+  border-color: #ffd95a;
+
+  background: #244765;
+
+  color: #ffd95a;
+
+  box-shadow:
+    0 0 12px rgba(255,217,90,.14);
+}
+
+/* =========================================================
+   QUESTION PANEL
+   ========================================================= */
+
+.question-panel {
+  width: 100%;
+  flex: 1;
+
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 1.5%;
+
+  border: 2px solid #314b66;
+  border-radius: 16px;
+
+  background:
+    rgba(5,17,31,.78);
 
   overflow: hidden;
 }
 
-.progress > div {
-  height: 100%;
+.question-label {
+  flex: 0 0 auto;
 
-  border-radius: inherit;
+  margin-bottom: 1%;
 
-  background: #e9b949;
+  font-size: clamp(12px, 1vw, 17px);
 
-  transition:
-    width .2s ease;
+  color: #9db1c6;
+}
+
+.question {
+  flex: 0 0 auto;
+
+  width: 100%;
+
+  text-align: center;
+
+  margin-bottom: 1%;
+
+  font-size: clamp(24px, 3vw, 52px);
+  line-height: 1.1;
+
+  font-weight: 1000;
+
+  text-shadow: 3px 3px 0 #000;
+}
+
+.question-meaning {
+  font-size: clamp(14px, 1.3vw, 22px);
+
+  color: #d9e6f3;
+
+  margin-bottom: 1.5%;
 }
 
 /* =========================================================
-   SCRAMBLE
-========================================================= */
+   TIMER
+   ========================================================= */
 
-.answer {
-  width: 100%;
+.timer-wrap {
+  width: min(90%, 760px);
 
-  min-height:
-    clamp(48px, 5vw, 68px);
+  flex: 0 0 auto;
 
-  margin: 16px auto;
-
-  padding: 9px;
-
-  border:
-    2px dashed #627b97;
-
-  border-radius: 8px;
-
-  background: #091625;
-
-  font-size:
-    clamp(19px, 2.7vw, 38px);
-
-  font-weight: 900;
-
-  letter-spacing: 3px;
-
-  overflow-wrap: anywhere;
+  margin-bottom: 1.5%;
 }
 
-.scramble {
-  width: min(100%, 950px);
+.timer {
+  height: clamp(10px, 1vw, 18px);
 
-  margin: 16px auto;
+  width: 100%;
+
+  border: 2px solid #38536e;
+  border-radius: 999px;
+
+  background: #07111f;
+
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+
+  background: #55d66f;
+
+  transition: width .25s linear;
+}
+
+.timer-bar.warning {
+  background: #ffb52e;
+}
+
+.timer-bar.danger {
+  background: #ff5b5b;
+}
+
+/* =========================================================
+   CHOICES
+   ========================================================= */
+
+.choices {
+  width: min(90%, 820px);
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 1.5%;
+
+  flex: 1;
+
+  min-height: 0;
+
+  align-content: center;
+}
+
+.choice {
+  min-height: clamp(48px, 6vw, 85px);
+
+  border: 3px solid #3b5772;
+  border-radius: 13px;
+
+  background:
+    linear-gradient(180deg, #173450, #0d2137);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  padding: 1.2%;
+
+  font-size: clamp(14px, 1.3vw, 23px);
+  font-weight: 900;
+
+  transition:
+    border-color .1s ease,
+    transform .1s ease,
+    background .1s ease;
+}
+
+.choice:hover {
+  border-color: #83a8cb;
+  transform: translateY(-2px);
+}
+
+.choice.correct {
+  border-color: #63e27b;
+  background: #174e2a;
+}
+
+.choice.wrong {
+  border-color: #ff5b5b;
+  background: #5b2020;
+}
+
+/* =========================================================
+   SCRAMBLE LETTERS
+   ========================================================= */
+
+.scramble {
+  width: min(94%, 900px);
 
   display: flex;
 
   flex-wrap: wrap;
-
   justify-content: center;
 
-  gap:
-    clamp(5px, .8vw, 12px);
+  gap: 1%;
+
+  margin-bottom: 1.5%;
 }
 
-.letter {
-  width:
-    clamp(40px, 5.5vw, 68px);
+.letter-btn {
+  width: clamp(38px, 4vw, 68px);
+  height: clamp(38px, 4vw, 68px);
 
-  height:
-    clamp(40px, 5.5vw, 68px);
+  border: 3px solid #55728e;
+  border-radius: 10px;
 
-  border:
-    2px solid #607b99;
-
-  border-radius: 8px;
-
-  background: #1a304a;
-
+  background: #132d48;
   color: #ffffff;
 
-  font-size:
-    clamp(16px, 1.8vw, 27px);
+  cursor: pointer;
 
-  font-weight: 900;
+  font-size: clamp(17px, 1.8vw, 30px);
+  font-weight: 1000;
 }
 
-.letter:hover:not(:disabled) {
-  border-color: #ffd34e;
+.letter-btn.used {
+  opacity: .28;
+  cursor: default;
 }
 
-.letter:disabled {
-  opacity: .3;
+.answer-display {
+  min-height: clamp(42px, 5vw, 70px);
+
+  width: min(90%, 700px);
+
+  padding: 1% 2%;
+
+  border-bottom: 3px solid #6f89a2;
+
+  text-align: center;
+
+  font-size: clamp(20px, 2.3vw, 40px);
+  font-weight: 1000;
+
+  letter-spacing: .12em;
+
+  margin-bottom: 1.5%;
 }
 
 /* =========================================================
-   RESULT
-========================================================= */
+   PROGRESS
+   ========================================================= */
 
-.result {
-  width: min(100%, 850px);
+.progress {
+  width: min(90%, 900px);
 
-  margin: 0 auto;
+  flex: 0 0 auto;
+
+  margin-top: 1%;
+
+  font-size: clamp(12px, 1vw, 17px);
+
+  color: #9fb1c3;
 
   text-align: center;
 }
 
-.big {
-  margin: 12px 0;
+/* =========================================================
+   RESULT
+   ========================================================= */
 
-  font-size:
-    clamp(30px, 5.5vw, 70px);
+.result {
+  flex: 1;
 
-  color: #ffd34e;
+  min-height: 0;
 
-  letter-spacing: 4px;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
 }
 
-.menu-row {
-  display: flex;
+.result h2 {
+  margin: 0 0 1%;
 
-  flex-wrap: wrap;
+  font-size: clamp(28px, 3.5vw, 58px);
+
+  color: #ffd95a;
+
+  text-shadow: 3px 3px 0 #000;
+}
+
+.result p {
+  margin: .5% 0;
+
+  font-size: clamp(14px, 1.3vw, 22px);
+}
+
+/* =========================================================
+   STARS
+   ========================================================= */
+
+.stars {
+  display: flex;
 
   justify-content: center;
 
-  align-items: center;
+  gap: .6%;
 
-  gap: 10px;
+  margin: 1.5% 0;
+
+  font-size: clamp(28px, 4vw, 60px);
+}
+
+.star {
+  color: #38495a;
+}
+
+.star.active {
+  color: #ffd95a;
+
+  text-shadow:
+    0 0 12px rgba(255,217,90,.35);
 }
 
 /* =========================================================
    WORD BOOK
-========================================================= */
+   ========================================================= */
 
 .wordbook {
+  width: 100%;
+
+  flex: 1;
+
+  min-height: 0;
+
   display: grid;
 
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
 
-  gap: 8px;
+  gap: 1%;
+
+  overflow: hidden;
 }
 
-.word {
+.word-card {
   min-width: 0;
+  min-height: 0;
 
-  padding:
-    clamp(10px, 1.2vw, 16px);
+  padding: 3%;
 
-  border:
-    2px solid #3f5873;
+  border: 2px solid #344f6a;
+  border-radius: 12px;
 
-  border-radius: 7px;
+  background: #0d2137;
 
-  background: #12243a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  overflow: hidden;
 }
 
-.word strong,
-.word span {
-  display: block;
+.word-card .en {
+  font-size: clamp(14px, 1.4vw, 23px);
+  font-weight: 1000;
 
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.word strong {
-  font-size:
-    clamp(12px, 1.3vw, 19px);
+.word-card .zh {
+  margin-top: 4%;
+
+  font-size: clamp(12px, 1vw, 18px);
+
+  color: #aebfd1;
 }
 
-.word span {
-  margin-top: 4px;
+.word-card .mastery {
+  margin-top: 5%;
 
-  color: #a9bad0;
+  font-size: clamp(12px, 1vw, 18px);
 
-  font-size:
-    clamp(10px, 1.05vw, 16px);
+  color: #ffd95a;
 }
 
 /* =========================================================
-   TABLET
-========================================================= */
+   REVIEW
+   ========================================================= */
+
+.review-list {
+  width: 100%;
+
+  flex: 1;
+
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 1%;
+
+  overflow: hidden;
+}
+
+.review-card {
+  min-height: 0;
+
+  padding: 4%;
+
+  border: 2px solid #405a74;
+  border-radius: 12px;
+
+  background: #0e243b;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.review-card strong {
+  font-size: clamp(14px, 1.3vw, 22px);
+}
+
+.review-card span {
+  margin-top: 4%;
+
+  font-size: clamp(12px, 1vw, 17px);
+
+  color: #aebfd0;
+}
+
+/* =========================================================
+   ACHIEVEMENTS
+   ========================================================= */
+
+.achievement-grid {
+  width: 100%;
+
+  flex: 1;
+
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 1.5%;
+}
+
+.achievement {
+  min-height: 0;
+
+  border: 2px solid #3b5670;
+  border-radius: 12px;
+
+  background: #0e243b;
+
+  padding: 4%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.achievement.unlocked {
+  border-color: #ffd95a;
+
+  box-shadow:
+    0 0 16px rgba(255,217,90,.12);
+}
+
+.achievement-title {
+  font-size: clamp(13px, 1.2vw, 21px);
+  font-weight: 1000;
+}
+
+.achievement-text {
+  margin-top: 4%;
+
+  font-size: clamp(11px, .95vw, 16px);
+
+  color: #aebfd0;
+}
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.back-btn {
+  flex: 0 0 auto;
+
+  align-self: flex-start;
+
+  margin-bottom: 1.5%;
+
+  padding: .7% 1.5%;
+
+  border: 2px solid #48637d;
+  border-radius: 10px;
+
+  background: #10263e;
+  color: #ffffff;
+
+  cursor: pointer;
+
+  font-size: clamp(12px, 1vw, 18px);
+}
+
+/* =========================================================
+   HINT
+   ========================================================= */
+
+.hint-btn {
+  flex: 0 0 auto;
+
+  margin-top: 1%;
+
+  padding: .7% 1.5%;
+
+  border: 2px solid #7e6c39;
+  border-radius: 9px;
+
+  background: #332d18;
+  color: #ffd95a;
+
+  cursor: pointer;
+
+  font-size: clamp(12px, 1vw, 17px);
+}
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+.message {
+  min-height: 1.5em;
+
+  margin-top: 1%;
+
+  font-size: clamp(13px, 1.1vw, 19px);
+
+  font-weight: 900;
+
+  text-align: center;
+}
+
+.message.correct {
+  color: #67e77e;
+}
+
+.message.wrong {
+  color: #ff7777;
+}
+
+/* =========================================================
+   RPG PANEL
+   ========================================================= */
+
+.panel {
+  width: 100%;
+
+  padding: 2%;
+
+  border: 2px solid #334e69;
+  border-radius: 14px;
+
+  background:
+    rgba(7,18,32,.82);
+}
+
+/* =========================================================
+   TABLET / iPAD
+   ========================================================= */
 
 @media (max-width: 900px) {
 
-  .game {
+  body {
+    overflow: hidden;
+  }
+
+  .shell {
     width: 100vw;
     height: 100vh;
 
-    aspect-ratio: auto;
-
-    border: 0;
-    border-radius: 0;
-  }
-
-  .top {
-    height: 9vh;
-  }
-
-  .content {
-    height: 91vh;
-
-    padding:
-      18px
-      clamp(15px, 4vw, 35px);
-  }
-
-  .chapter-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .mode-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .wordbook {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* =========================================================
-   PHONE
-========================================================= */
-
-@media (max-width: 600px) {
-
-  body {
-    overflow: hidden;
+    align-items: stretch;
+    justify-content: stretch;
   }
 
   .game {
@@ -938,134 +1102,319 @@ p {
 
     max-width: none;
     max-height: none;
+
+    aspect-ratio: auto;
+
+    border: 0;
+    border-radius: 0;
+
+    overflow: hidden;
   }
 
   .top {
-    height: 58px;
+    height: 9vh;
 
-    padding:
-      8px 12px;
-  }
+    min-height: 54px;
 
-  .logo {
-    font-size: 15px;
-  }
-
-  .score {
-    font-size: 12px;
+    padding: 0 3%;
   }
 
   .content {
-    height:
-      calc(100vh - 58px);
+    height: 91vh;
 
-    padding:
-      14px 11px 25px;
+    padding: 3%;
+
+    overflow: hidden;
   }
 
-  .hero-title {
-    margin-top: 25px;
-
-    font-size:
-      clamp(38px, 15vw, 68px);
+  .chapter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
   }
 
-  .subtitle {
-    font-size: 9px;
+  .wordbook,
+  .review-list,
+  .achievement-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .panel {
-    padding: 13px;
+  .mode-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .gender-grid,
-  .chapter-grid,
-  .mode-grid,
-  .choices {
-    grid-template-columns: 1fr;
-  }
-
-  .gender {
-    min-height: 72px;
-  }
-
-  .chapter {
-    min-height: 120px;
-  }
-
-  .quest-head {
-    align-items: flex-start;
-  }
-
-  .question {
-    font-size:
-      clamp(26px, 9vw, 44px);
-  }
-
-  .choice {
-    min-height: 57px;
-
-    font-size:
-      clamp(14px, 4.2vw, 19px);
-  }
-
-  .menu-row {
-    flex-direction: column;
-  }
-
-  .menu-row button,
-  .primary,
-  .secondary {
-    width: 100%;
-  }
-
-  .wordbook {
-    grid-template-columns: 1fr;
-  }
-
-  .timer {
-    min-width: 55px;
-  }
-
-  .mode {
-    min-height: 80px;
-  }
 }
 
 /* =========================================================
-   SMALL PHONE
-========================================================= */
+   PHONE
+   ========================================================= */
 
-@media (max-width: 380px) {
+@media (max-width: 600px) {
 
-  .content {
-    padding-left: 9px;
-    padding-right: 9px;
+  body {
+    overflow: auto;
   }
 
-  .logo {
+  .shell {
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+
+    display: block;
+
+    overflow: visible;
+  }
+
+  .game {
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+
+    aspect-ratio: auto;
+
+    border: 0;
+    border-radius: 0;
+
+    overflow: visible;
+  }
+
+  .top {
+    height: 64px;
+    min-height: 64px;
+
+    padding: 0 4%;
+  }
+
+  .top h1,
+  .top .title {
+    font-size: 18px;
+  }
+
+  .content {
+    height: auto;
+    min-height: calc(100vh - 64px);
+
+    padding: 5% 4%;
+
+    overflow: visible;
+  }
+
+  .hero {
+    min-height: calc(100vh - 100px);
+  }
+
+  .hero h2 {
+    font-size: clamp(28px, 9vw, 44px);
+  }
+
+  .hero p {
+    font-size: 14px;
+    margin-bottom: 6%;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 5%;
+
+    font-size: 16px;
+  }
+
+  .gender-grid {
+    width: 100%;
+    gap: 3%;
+
+    margin-bottom: 5%;
+  }
+
+  .gender-btn {
+    min-height: 80px;
+
+    font-size: 17px;
+  }
+
+  .primary-btn {
+    width: 100%;
+    min-width: 0;
+
+    padding: 15px 20px;
+
+    font-size: 18px;
+  }
+
+  .map-title {
+    margin-bottom: 5%;
+
+    font-size: 27px;
+  }
+
+  .chapter-grid {
+    display: grid;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+
+    gap: 14px;
+  }
+
+  .chapter-card {
+    min-height: 115px;
+
+    padding: 18px;
+  }
+
+  .chapter-name {
+    font-size: 18px;
+  }
+
+  .quest-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    margin-bottom: 4%;
+  }
+
+  .quest-title {
+    width: 100%;
+
+    white-space: normal;
+
+    font-size: 23px;
+  }
+
+  .quest-meta {
+    width: 100%;
+
+    justify-content: space-between;
+
     font-size: 13px;
   }
 
-  .score {
-    font-size: 10px;
+  .mode-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-bottom: 14px;
   }
 
-  .letter {
-    width: 40px;
-    height: 40px;
+  .mode-btn {
+    min-height: 54px;
+
+    font-size: 13px;
   }
+
+  .question-panel {
+    min-height: 480px;
+
+    padding: 20px 14px;
+
+    overflow: visible;
+  }
+
+  .question {
+    font-size: clamp(27px, 8vw, 38px);
+
+    margin-bottom: 12px;
+  }
+
+  .question-meaning {
+    font-size: 15px;
+
+    margin-bottom: 18px;
+  }
+
+  .timer-wrap {
+    width: 100%;
+
+    margin-bottom: 18px;
+  }
+
+  .timer {
+    height: 12px;
+  }
+
+  .choices {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+    flex: none;
+  }
+
+  .choice {
+    min-height: 58px;
+
+    padding: 12px;
+
+    font-size: 16px;
+  }
+
+  .scramble {
+    width: 100%;
+
+    gap: 7px;
+  }
+
+  .letter-btn {
+    width: 43px;
+    height: 43px;
+
+    font-size: 18px;
+  }
+
+  .answer-display {
+    width: 100%;
+
+    min-height: 48px;
+
+    font-size: 22px;
+
+    margin-bottom: 18px;
+  }
+
+  .progress {
+    margin-top: 15px;
+  }
+
+  .wordbook,
+  .review-list,
+  .achievement-grid {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+    overflow: visible;
+  }
+
+  .word-card,
+  .review-card,
+  .achievement {
+    min-height: 95px;
+
+    padding: 18px;
+  }
+
+  .back-btn {
+    margin-bottom: 18px;
+
+    padding: 9px 13px;
+
+    font-size: 14px;
+  }
+
+  .result h2 {
+    font-size: 36px;
+  }
+
 }
 
 /* =========================================================
-   LANDSCAPE PHONE
-========================================================= */
+   PHONE LANDSCAPE
+   ========================================================= */
 
-@media (
-  max-height: 500px
-) and (
-  orientation: landscape
-) {
+@media (max-width: 900px) and (orientation: landscape) {
 
   .game {
     width: 100vw;
@@ -1074,28 +1423,62 @@ p {
 
   .top {
     height: 52px;
+    min-height: 52px;
   }
 
   .content {
-    height:
-      calc(100vh - 52px);
+    height: calc(100vh - 52px);
 
-    padding:
-      10px 18px 18px;
+    padding: 2%;
   }
 
-  .hero-title {
-    margin-top: 8px;
-
-    font-size:
-      clamp(30px, 9vh, 58px);
+  .chapter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
   }
 
-  .gender {
-    min-height: 58px;
+  .chapter-card {
+    min-height: 0;
   }
 
-  .chapter {
-    min-height: 100px;
+  .mode-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+}
+
+/* =========================================================
+   SAFETY: NEVER SHOW DESKTOP SCROLLBARS
+   ========================================================= */
+
+@media (min-width: 601px) {
+
+  html,
+  body,
+  .shell,
+  .game,
+  .content {
+    overflow: hidden !important;
+  }
+
+}
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) {
+
+  button:hover {
+    transform: none;
+  }
+
+  .chapter-card:hover {
+    transform: none;
+  }
+
+  .choice:hover {
+    transform: none;
+  }
+
 }
