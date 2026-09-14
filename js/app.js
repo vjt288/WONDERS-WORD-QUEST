@@ -195,7 +195,21 @@ function renderTop() {
 }
 
 function setScreen(html) {
-  const game = $(".game");
+  let game = $(".game");
+
+  if (!game) {
+    const app = $("#app");
+
+    if (!app) return;
+
+    app.innerHTML = `
+      <div class="shell">
+        <div class="game"></div>
+      </div>
+    `;
+
+    game = $(".game");
+  }
 
   if (!game) return;
 
@@ -758,9 +772,6 @@ function chooseNextMode() {
   return mode;
 }
 
-function chooseNextMode() {
-    ...
-}
 
 
 function renderFeedback(
