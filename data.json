@@ -1,448 +1,415 @@
 {
-  "chapters": [
+  "Chapter 1 — Maria Celebrates Brazil": [
     {
-      "id": 1,
-      "code": "CHAPTER 1",
-      "title": "Maria Celebrates Brazil",
-      "theme": "Carnival Celebration",
-      "words": [
-        {
-          "w": "aside",
-          "m": "到一旁",
-          "v": "↔️",
-          "s": "Maria moved aside to make room for the parade."
-        },
-        {
-          "w": "plead",
-          "m": "懇求",
-          "v": "🙏",
-          "s": "Maria may plead with her friend to let her join the fun."
-        },
-        {
-          "w": "fair",
-          "m": "公平的／市集",
-          "v": "🎪",
-          "s": "The carnival has a fair with games and food."
-        },
-        {
-          "w": "share",
-          "m": "分享",
-          "v": "🍎🤝",
-          "s": "Maria likes to share her snack with a friend."
-        },
-        {
-          "w": "invited",
-          "m": "被邀請",
-          "v": "💌",
-          "s": "Maria was invited to the celebration."
-        },
-        {
-          "w": "scurries",
-          "m": "急匆匆地跑",
-          "v": "🏃💨",
-          "s": "A little child scurries to see the parade."
-        },
-        {
-          "w": "language",
-          "m": "語言",
-          "v": "🗣️",
-          "s": "People can use language to talk to one another."
-        },
-        {
-          "w": "culture",
-          "m": "文化",
-          "v": "🌎🎭",
-          "s": "Music and costumes can show a country's culture."
-        },
-        {
-          "w": "parade",
-          "m": "遊行",
-          "v": "🎉🥁",
-          "s": "A colorful parade moves down the street."
-        },
-        {
-          "w": "practice",
-          "m": "練習",
-          "v": "🥁🎵",
-          "s": "The children practice before the big parade."
-        },
-        {
-          "w": "beat",
-          "m": "節拍／擊打",
-          "v": "🥁",
-          "s": "The drums keep a strong beat."
-        },
-        {
-          "w": "costumes",
-          "m": "服裝／戲服",
-          "v": "👗🎭",
-          "s": "The dancers wear bright costumes."
-        },
-        {
-          "w": "crowd",
-          "m": "人群",
-          "v": "👥",
-          "s": "A large crowd watches the parade."
-        },
-        {
-          "w": "proud",
-          "m": "驕傲的",
-          "v": "😊🏆",
-          "s": "Maria feels proud when she joins the celebration."
-        },
-        {
-          "w": "chance",
-          "m": "機會",
-          "v": "⭐",
-          "s": "This is Maria's chance to dance in the parade."
-        }
-      ]
+      "w": "aside",
+      "m": "在旁邊；此外",
+      "v": "↔️",
+      "s": "Please stand aside."
     },
     {
-      "id": 2,
-      "code": "CHAPTER 2",
-      "title": "A Look at Families",
-      "theme": "Family Village",
-      "words": [
-        {
-          "w": "common",
-          "m": "共同的／常見的",
-          "v": "🤝",
-          "s": "Families can have common interests."
-        },
-        {
-          "w": "differences",
-          "m": "不同之處",
-          "v": "🔍👨‍👩‍👧",
-          "s": "We can notice differences between two families."
-        },
-        {
-          "w": "include",
-          "m": "包含",
-          "v": "📦",
-          "s": "A family picture can include many people."
-        },
-        {
-          "w": "light",
-          "m": "輕的／光線",
-          "v": "💡🪶",
-          "s": "A feather is light, and a lamp gives light."
-        },
-        {
-          "w": "near",
-          "m": "附近的",
-          "v": "📍",
-          "s": "The two houses are near each other."
-        },
-        {
-          "w": "row",
-          "m": "一排／划船",
-          "v": "🚣",
-          "s": "The family sits in a row for a picture."
-        },
-        {
-          "w": "stilts",
-          "m": "高蹺",
-          "v": "🦵⬆️",
-          "s": "The performers walk high on stilts."
-        }
-      ]
+      "w": "plead",
+      "m": "懇求；央求",
+      "v": "🙏",
+      "s": "They plead for help."
     },
     {
-      "id": 3,
-      "code": "CHAPTER 3",
-      "title": "Secret Nest",
-      "theme": "Rescue Adventure",
-      "words": [
-        {
-          "w": "actions",
-          "m": "行動／動作",
-          "v": "🎬",
-          "s": "Our actions can help a bird in trouble."
-        },
-        {
-          "w": "afraid",
-          "m": "害怕的",
-          "v": "😨",
-          "s": "The little bird is afraid of falling."
-        },
-        {
-          "w": "depend on",
-          "m": "取決於／依靠",
-          "v": "🤝",
-          "s": "Young birds depend on their parents for care."
-        },
-        {
-          "w": "fall",
-          "m": "掉落／跌倒",
-          "v": "🍂⬇️",
-          "s": "Be careful not to fall from the branch."
-        },
-        {
-          "w": "flapped",
-          "m": "拍打（翅膀）",
-          "v": "🐦💨",
-          "s": "The bird flapped its wings."
-        },
-        {
-          "w": "ground",
-          "m": "地面",
-          "v": "🌱",
-          "s": "The nest fell close to the ground."
-        },
-        {
-          "w": "nervously",
-          "m": "緊張地",
-          "v": "😰",
-          "s": "The bird looked around nervously."
-        },
-        {
-          "w": "nest",
-          "m": "鳥巢",
-          "v": "🪺",
-          "s": "The baby bird was safe in its nest."
-        },
-        {
-          "w": "patch",
-          "m": "一小塊／補丁",
-          "v": "🩹",
-          "s": "A small patch covered the hole."
-        },
-        {
-          "w": "peered",
-          "m": "仔細看／凝視",
-          "v": "👀🔎",
-          "s": "The child peered into the nest."
-        },
-        {
-          "w": "perfectly",
-          "m": "完美地",
-          "v": "✨",
-          "s": "The rescued bird landed perfectly."
-        },
-        {
-          "w": "rescue",
-          "m": "救援／營救",
-          "v": "🛟🐦",
-          "s": "The children worked together to rescue the bird."
-        },
-        {
-          "w": "secret",
-          "m": "秘密",
-          "v": "🤫",
-          "s": "They found a secret place near the nest."
-        },
-        {
-          "w": "uneasy",
-          "m": "不安的",
-          "v": "😟",
-          "s": "The child felt uneasy near the broken branch."
-        },
-        {
-          "w": "worms",
-          "m": "蠕蟲",
-          "v": "🪱",
-          "s": "The baby birds need worms for food."
-        }
-      ]
+      "w": "fair",
+      "m": "公平的；合理的",
+      "v": "⚖️",
+      "s": "The game is fair."
     },
     {
-      "id": 4,
-      "code": "CHAPTER 4",
-      "title": "Harvest Adventure",
-      "theme": "Harvest Village",
-      "words": [
-        {
-          "w": "blocked",
-          "m": "被阻擋的／堵住的",
-          "v": "🚧",
-          "s": "The road was blocked by fallen branches."
-        },
-        {
-          "w": "chopped",
-          "m": "切碎的／砍下的",
-          "v": "🪓🪵",
-          "s": "The farmer chopped the wood."
-        },
-        {
-          "w": "harvest",
-          "m": "收穫／收成",
-          "v": "🌾🧺",
-          "s": "The family helped with the harvest."
-        },
-        {
-          "w": "reward",
-          "m": "獎勵",
-          "v": "🏆",
-          "s": "A good job can earn a reward."
-        },
-        {
-          "w": "rumbled",
-          "m": "發出隆隆聲／轟隆作響",
-          "v": "🌩️",
-          "s": "Thunder rumbled across the sky."
-        },
-        {
-          "w": "tugged",
-          "m": "拉／用力拉扯",
-          "v": "💪🪢",
-          "s": "The children tugged on the rope."
-        },
-        {
-          "w": "waists",
-          "m": "腰部／腰圍",
-          "v": "🧍",
-          "s": "The basket was tied around their waists."
-        }
-      ]
+      "w": "share",
+      "m": "分享",
+      "v": "🤝",
+      "s": "Please share your snack."
     },
     {
-      "id": 5,
-      "code": "CHAPTER 5",
-      "title": "Wild Horse Valley",
-      "theme": "Horse Ranch",
-      "words": [
-        {
-          "w": "allowed",
-          "m": "被允許的",
-          "v": "✅",
-          "s": "We are allowed to feed the horses with permission."
-        },
-        {
-          "w": "excited",
-          "m": "興奮的",
-          "v": "🤩🐴",
-          "s": "The children are excited to meet the horses."
-        },
-        {
-          "w": "grooms",
-          "m": "梳理／照料（動物）",
-          "v": "🪮🐴",
-          "s": "The rider grooms the horse every day."
-        },
-        {
-          "w": "hay",
-          "m": "乾草",
-          "v": "🌾🐴",
-          "s": "The horse eats hay in the stall."
-        },
-        {
-          "w": "mane",
-          "m": "鬃毛",
-          "v": "🐴✨",
-          "s": "The horse has a long mane."
-        },
-        {
-          "w": "needs",
-          "m": "需要",
-          "v": "❤️",
-          "s": "Every horse needs clean water."
-        },
-        {
-          "w": "roam",
-          "m": "漫遊／自由走動",
-          "v": "🐎🌿",
-          "s": "Wild horses roam across the valley."
-        },
-        {
-          "w": "saddle",
-          "m": "馬鞍",
-          "v": "🐴🪑",
-          "s": "The rider puts a saddle on the horse."
-        },
-        {
-          "w": "safe",
-          "m": "安全的",
-          "v": "🛡️",
-          "s": "The horses are safe inside the fence."
-        },
-        {
-          "w": "smooth",
-          "m": "平滑的／順滑的",
-          "v": "✨🐴",
-          "s": "The horse's mane feels smooth."
-        },
-        {
-          "w": "stall",
-          "m": "馬廄／畜欄",
-          "v": "🏠🐴",
-          "s": "The horse rests in its stall."
-        },
-        {
-          "w": "strokes",
-          "m": "輕撫／撫摸",
-          "v": "✋🐴",
-          "s": "She strokes the horse gently."
-        },
-        {
-          "w": "take care of",
-          "m": "照顧",
-          "v": "❤️🐴",
-          "s": "We take care of animals every day."
-        },
-        {
-          "w": "wandered",
-          "m": "漫步／閒逛",
-          "v": "🐴🚶",
-          "s": "The horse wandered around the field."
-        },
-        {
-          "w": "wild",
-          "m": "野生的／野外的",
-          "v": "🌾🐎",
-          "s": "The wild horses live in the valley."
-        }
-      ]
+      "w": "invited",
+      "m": "被邀請的",
+      "v": "💌",
+      "s": "Maria was invited to the parade."
     },
     {
-      "id": 6,
-      "code": "CHAPTER 6",
-      "title": "Animal Shelter",
-      "theme": "Rescue & Care",
-      "words": [
-        {
-          "w": "animal shelter",
-          "m": "動物收容所",
-          "v": "🏠🐶",
-          "s": "The animal shelter helps pets find safe homes."
-        },
-        {
-          "w": "different",
-          "m": "不同的",
-          "v": "🐶🐱",
-          "s": "The two animals look different."
-        },
-        {
-          "w": "exercise",
-          "m": "運動／鍛鍊",
-          "v": "🏃🐕",
-          "s": "Dogs need exercise every day."
-        },
-        {
-          "w": "in charge of",
-          "m": "負責",
-          "v": "📋",
-          "s": "The worker is in charge of the animals."
-        },
-        {
-          "w": "leash",
-          "m": "牽繩",
-          "v": "🦮",
-          "s": "The dog wears a leash on its walk."
-        },
-        {
-          "w": "owner",
-          "m": "主人／飼主",
-          "v": "👤🐕",
-          "s": "The shelter helps a pet find its owner."
-        },
-        {
-          "w": "veterinarian",
-          "m": "獸醫",
-          "v": "🩺🐶",
-          "s": "The veterinarian checks the sick dog."
-        }
-      ]
+      "w": "scurries",
+      "m": "匆匆跑動",
+      "v": "🏃",
+      "s": "The child scurries across the room."
+    },
+    {
+      "w": "language",
+      "m": "語言",
+      "v": "🗣️",
+      "s": "English is a language."
+    },
+    {
+      "w": "culture",
+      "m": "文化",
+      "v": "🌎",
+      "s": "Food is part of a culture."
+    },
+    {
+      "w": "parade",
+      "m": "遊行",
+      "v": "🎉",
+      "s": "We watch the parade."
+    },
+    {
+      "w": "practice",
+      "m": "練習",
+      "v": "🏋️",
+      "s": "We practice every day."
+    },
+    {
+      "w": "beat",
+      "m": "節拍；打",
+      "v": "🥁",
+      "s": "We dance to the beat."
+    },
+    {
+      "w": "costumes",
+      "m": "服裝；戲服",
+      "v": "👗",
+      "s": "The dancers wear costumes."
+    },
+    {
+      "w": "crowd",
+      "m": "人群",
+      "v": "👥",
+      "s": "A large crowd watches the parade."
+    },
+    {
+      "w": "proud",
+      "m": "驕傲的",
+      "v": "🏆",
+      "s": "Maria feels proud."
+    },
+    {
+      "w": "chance",
+      "m": "機會",
+      "v": "🍀",
+      "s": "This is my chance to help."
+    }
+  ],
+
+  "Chapter 2 — A Look at Families": [
+    {
+      "w": "common",
+      "m": "共同的；常見的",
+      "v": "👨‍👩‍👧‍👦",
+      "s": "Families have some common things."
+    },
+    {
+      "w": "differences",
+      "m": "差異",
+      "v": "🔀",
+      "s": "We can learn from our differences."
+    },
+    {
+      "w": "include",
+      "m": "包括",
+      "v": "➕",
+      "s": "The group will include everyone."
+    },
+    {
+      "w": "light",
+      "m": "輕的；光",
+      "v": "💡",
+      "s": "This bag is light."
+    },
+    {
+      "w": "near",
+      "m": "靠近",
+      "v": "📍",
+      "s": "The school is near my home."
+    },
+    {
+      "w": "row",
+      "m": "排；列",
+      "v": "🪑",
+      "s": "We sit in a row."
+    },
+    {
+      "w": "stilts",
+      "m": "高蹺",
+      "v": "🦵",
+      "s": "The performer walks on stilts."
+    }
+  ],
+
+  "Chapter 3 — Secret Nest / Rescue Adventure": [
+    {
+      "w": "actions",
+      "m": "行動；動作",
+      "v": "🎬",
+      "s": "Her actions help the bird."
+    },
+    {
+      "w": "afraid",
+      "m": "害怕的",
+      "v": "😨",
+      "s": "The little bird is afraid."
+    },
+    {
+      "w": "depend on",
+      "m": "依靠",
+      "v": "🫶",
+      "s": "Birds depend on their parents."
+    },
+    {
+      "w": "fall",
+      "m": "掉落；跌倒",
+      "v": "⬇️",
+      "s": "Leaves fall from the tree."
+    },
+    {
+      "w": "flapped",
+      "m": "拍動翅膀",
+      "v": "🪽",
+      "s": "The bird flapped its wings."
+    },
+    {
+      "w": "ground",
+      "m": "地面",
+      "v": "🌱",
+      "s": "The nest fell to the ground."
+    },
+    {
+      "w": "nervously",
+      "m": "緊張地",
+      "v": "😰",
+      "s": "He looked around nervously."
+    },
+    {
+      "w": "nest",
+      "m": "鳥巢",
+      "v": "🪺",
+      "s": "The bird is in its nest."
+    },
+    {
+      "w": "patch",
+      "m": "小塊；補丁",
+      "v": "🩹",
+      "s": "There is a small patch on the cloth."
+    },
+    {
+      "w": "peered",
+      "m": "仔細看；凝視",
+      "v": "👀",
+      "s": "She peered into the nest."
+    },
+    {
+      "w": "perfectly",
+      "m": "完美地",
+      "v": "✨",
+      "s": "The bird fits perfectly in the nest."
+    },
+    {
+      "w": "rescue",
+      "m": "救援；營救",
+      "v": "🛟",
+      "s": "They rescue the bird."
+    },
+    {
+      "w": "secret",
+      "m": "秘密",
+      "v": "🤫",
+      "s": "This is our secret."
+    },
+    {
+      "w": "uneasy",
+      "m": "不安的",
+      "v": "😟",
+      "s": "The child feels uneasy."
+    },
+    {
+      "w": "worms",
+      "m": "蟲；蚯蚓",
+      "v": "🪱",
+      "s": "Birds eat worms."
+    }
+  ],
+
+  "Chapter 4 — Harvest Adventure": [
+    {
+      "w": "blocked",
+      "m": "被堵住的",
+      "v": "🚧",
+      "s": "The road was blocked."
+    },
+    {
+      "w": "chopped",
+      "m": "砍；切",
+      "v": "🪓",
+      "s": "Dad chopped the wood."
+    },
+    {
+      "w": "harvest",
+      "m": "收成；收穫",
+      "v": "🌾",
+      "s": "Farmers gather the harvest."
+    },
+    {
+      "w": "reward",
+      "m": "獎勵；回報",
+      "v": "🏅",
+      "s": "The prize is a reward."
+    },
+    {
+      "w": "rumbled",
+      "m": "隆隆作響",
+      "v": "🌩️",
+      "s": "Thunder rumbled in the sky."
+    },
+    {
+      "w": "tugged",
+      "m": "用力拉",
+      "v": "💪",
+      "s": "She tugged the rope."
+    },
+    {
+      "w": "waists",
+      "m": "腰部",
+      "v": "🧍",
+      "s": "The belts are around their waists."
+    }
+  ],
+
+  "Chapter 5 — Wild Horse Valley": [
+    {
+      "w": "allowed",
+      "m": "被允許的",
+      "v": "✅",
+      "s": "We are allowed to enter."
+    },
+    {
+      "w": "excited",
+      "m": "興奮的",
+      "v": "🤩",
+      "s": "The children are excited."
+    },
+    {
+      "w": "grooms",
+      "m": "梳理；整理",
+      "v": "🐴",
+      "s": "He grooms the horse."
+    },
+    {
+      "w": "hay",
+      "m": "乾草",
+      "v": "🌾",
+      "s": "The horse eats hay."
+    },
+    {
+      "w": "mane",
+      "m": "鬃毛",
+      "v": "🐎",
+      "s": "The horse has a long mane."
+    },
+    {
+      "w": "needs",
+      "m": "需要",
+      "v": "📦",
+      "s": "The horse needs water."
+    },
+    {
+      "w": "roam",
+      "m": "漫遊；自由走動",
+      "v": "🏞️",
+      "s": "Wild horses roam the valley."
+    },
+    {
+      "w": "saddle",
+      "m": "馬鞍",
+      "v": "🐴",
+      "s": "The saddle is on the horse."
+    },
+    {
+      "w": "safe",
+      "m": "安全的",
+      "v": "🛡️",
+      "s": "The horse is safe here."
+    },
+    {
+      "w": "smooth",
+      "m": "平滑的",
+      "v": "🪶",
+      "s": "The horse has a smooth coat."
+    },
+    {
+      "w": "stall",
+      "m": "馬廄；畜欄",
+      "v": "🏠",
+      "s": "The horse rests in its stall."
+    },
+    {
+      "w": "strokes",
+      "m": "輕撫；撫摸",
+      "v": "✋",
+      "s": "She strokes the horse gently."
+    },
+    {
+      "w": "take care of",
+      "m": "照顧",
+      "v": "❤️",
+      "s": "We take care of animals."
+    },
+    {
+      "w": "wandered",
+      "m": "漫步；徘徊",
+      "v": "🚶",
+      "s": "The horse wandered away."
+    },
+    {
+      "w": "wild",
+      "m": "野生的；狂野的",
+      "v": "🌲",
+      "s": "The horse is wild."
+    }
+  ],
+
+    "Chapter 6 — Animal Shelter": [
+    {
+      "w": "animal shelter",
+      "m": "動物收容所",
+      "v": "🏠🐾",
+      "s": "The dog lives at an animal shelter."
+    },
+    {
+      "w": "different",
+      "m": "不同的",
+      "v": "🔄",
+      "s": "Every animal is different."
+    },
+    {
+      "w": "exercise",
+      "m": "運動；鍛鍊",
+      "v": "🏃",
+      "s": "Dogs need exercise."
+    },
+    {
+      "w": "in charge of",
+      "m": "負責",
+      "v": "👩‍⚕️",
+      "s": "She is in charge of the animals."
+    },
+    {
+      "w": "leash",
+      "m": "牽繩",
+      "v": "🦮",
+      "s": "The dog is on a leash."
+    },
+    {
+      "w": "owner",
+      "m": "主人；飼主",
+      "v": "👤",
+      "s": "The dog knows its owner."
+    },
+    {
+      "w": "veterinarian",
+      "m": "獸醫",
+      "v": "🩺",
+      "s": "The veterinarian helps the animals."
     }
   ]
 }
