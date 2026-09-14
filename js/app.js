@@ -1,20 +1,10 @@
 /* =========================================================
-   WONDERS WORD QUEST V9
-   QUESTION ENGINE
-   - 6 real game modes
-   - random word + random mode + random options
-   - no same mode twice in a row
-   - contextual sentence questions
-   - visual clue questions
-   - 30-second timer
-   - replay / review / mastery preserved
-========================================================= */
+   WONDERS WORD QUEST — V9.1
+   Complete replacement for js/app.js
+   ========================================================= */
 
-const DATA_URL = "data.json";
-const SAVE_KEY = "wwq_v9_save";
-
-let DATA = null;
-let session = null;
+const SAVE_KEY = "wwq_v8_save";
+const QUESTION_TIME = 30;
 
 const MODES = [
   "picture",
@@ -25,70 +15,89 @@ const MODES = [
   "attack"
 ];
 
-const MODE_INFO = {
-  picture: ["🖼️ PICTURE MATCH", "看圖像線索 → 找單字"],
-  meaning: ["📝 WORD → MEANING", "英文 → 選中文意思"],
-  spell: ["🔤 SPELL IT", "中文提示 → 拼出英文"],
-  scramble: ["🧩 SCRAMBLE", "重新排列字母"],
-  sentence: ["💬 SENTENCE QUEST", "英文情境句 → 選正確單字"],
-  attack: ["⚡ WORD ATTACK", "限時快速反應"]
-};
+let WORDS = {};
+let session = null;
 
 let state = {
-  name: "",
-  gender: "",
-  score: 0,
+  player: "",
+  character: "boy",
   unlocked: 1,
+  completed: {},
   stars: {},
   mastery: {},
-  chaptersDone: {}
+  score: 0,
+  hints: 3,
+  achievements: [],
+  bossDefeated: false
 };
 
 const $ = (selector) => document.querySelector(selector);
 
-function shuffle(array) {
-  const a = [...array];
+function esc(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
-  for (let i = a.length - 1; i > 0; i--) {
+function shuffle(array) {
+  const result = [...array];
+
+  for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
 
-    [a[i], a[j]] = [a[j], a[i]];
+    [result[i], result[j]] = [
+      result[j],
+      result[i]
+    ];
   }
 
-  return a;
+  return result;
 }
 
-function wordEN(word) {
-  return typeof word === "object" ? word.w : word[0];
+function normalizeWord(item) {
+  if (Array.isArray(item)) {
+    return {
+      w: item[0],
+      m: item[1],
+      v: item[2] || "🔤",
+      s: item[3] || ""
+    };
+  }
+
+  return item || {
+    w: "",
+    m: "",
+    v: "🔤",
+    s: ""
+  };
 }
 
-function wordZH(word) {
-  return typeof word === "object" ? word.m : word[1];
+function wordEN(item) {
+  return normalizeWord(item).w;
 }
 
-function wordVisual(word) {
-  return typeof word === "object" && word.v
-    ? word.v
-    : "🔤";
+function wordZH(item) {
+  return normalizeWord(item).m;
 }
 
-function wordSentence(word) {
-  return typeof word === "object" && word.s
-    ? word.s
-    : `Choose the word that means "${wordZH(word)}".`;
+function chapterNames() {
+  return Object.keys(WORDS);
 }
 
-function esc(value) {
-  return String(value).replace(
-    /[&<>"']/g,
-    (match) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[match]
+function chapterWords(chapterIndex) {
+  const name = chapterNames()[chapterIndex - 1];
+
+  if (!name) return [];
+
+  return WORDS[name].map(normalizeWord);
+}
+
+function allWords() {
+  return chapterNames().flatMap(
+    name => WORDS[name].map(normalizeWord)
   );
 }
 
@@ -99,61 +108,137 @@ function save() {
       JSON.stringify(state)
     );
   } catch (error) {
-    console.warn("Save failed.", error);
+    console.warn("Save unavailable:", error);
   }
 }
 
 function load() {
   try {
-    const saved = JSON.parse(
-      localStorage.getItem(SAVE_KEY)
-    );
+    const raw = localStorage.getItem(SAVE_KEY);
 
-    if (saved) {
-      state = {
-        ...state,
-        ...saved
-      };
-    }
+    if (!raw) return;
+
+    const saved = JSON.parse(raw);
+
+    state = {
+      ...state,
+      ...saved,
+
+      completed:
+        saved.completed || {},
+
+      stars:
+        saved.stars || {},
+
+      mastery:
+        saved.mastery || {},
+
+      achievements:
+        saved.achievements || []
+    };
 
   } catch (error) {
-    console.warn("Load failed.", error);
+    console.warn("Load unavailable:", error);
   }
 }
 
-function starText(number) {
-  return (
-    "★".repeat(number) +
-    "☆".repeat(
-      Math.max(0, 3 - number)
-    )
-  );
+function masteryKey(word) {
+  return String(wordEN(word))
+    .toLowerCase();
 }
 
-function render(html) {
+function getMastery(word) {
+  const key = masteryKey(word);
 
-  const app = $("#app");
-
-  if (app) {
-
-    app.innerHTML =
-      `<div class="shell">
-        <div class="game">
-          ${html}
-        </div>
-      </div>`;
-  }
+  return state.mastery[key] || {
+    correct: 0,
+    wrong: 0,
+    attempts: 0,
+    bestTime: 999,
+    star: 0
+  };
 }
 
-function renderTop(
-  title = "WONDERS WORD QUEST"
+function updateMastery(
+  word,
+  correct,
+  elapsed
 ) {
+  const key = masteryKey(word);
 
+  const mastery = getMastery(word);
+
+  mastery.attempts++;
+
+  if (correct) {
+    mastery.correct++;
+
+    mastery.bestTime =
+      Math.min(
+        mastery.bestTime,
+        elapsed
+      );
+  } else {
+    mastery.wrong++;
+  }
+
+  state.mastery[key] = mastery;
+}
+
+function renderTop() {
+  const score = $(".score");
+
+  if (score) {
+    score.textContent =
+      `SCORE ${state.score}`;
+  }
+}
+
+function setScreen(html) {
+  const game = $(".game");
+
+  if (!game) return;
+
+  game.innerHTML = html;
+
+  renderTop();
+}
+
+function titleBlock(
+  title,
+  subtitle = ""
+) {
   return `
+    <div class="hero-title">
+      ${esc(title)}
+    </div>
+
+    ${
+      subtitle
+        ? `
+          <div class="subtitle">
+            ${esc(subtitle)}
+          </div>
+        `
+        : ""
+    }
+  `;
+}
+
+function boot() {
+  load();
+
+  renderHome();
+}
+
+function renderHome() {
+
+  setScreen(`
+
     <div class="top">
 
       <div class="logo">
-        ${title}
+        WONDERS WORD QUEST
       </div>
 
       <div class="score">
@@ -161,286 +246,324 @@ function renderTop(
       </div>
 
     </div>
-  `;
-}
 
-function menuBtn() {
 
-  return `
-    <button
-      class="secondary"
-      onclick="showMap()"
-    >
-      ← MENU
-    </button>
-  `;
-}
+    <div class="content">
 
-/* =========================================================
-   HOME
-========================================================= */
+      ${titleBlock(
+        "WONDERS WORD QUEST",
+        "Your English Word Adventure"
+      )}
 
-function boot() {
 
-  load();
+      <div class="panel">
 
-  render(`
+        <p>
+          Enter the Wonders World
+          and begin your word quest!
+        </p>
 
-    <div class="content center">
 
-      <div class="hero-title">
-        WONDERS<br>
-        WORD QUEST
+        <div class="menu-row">
+
+          <button
+            class="primary"
+            onclick="showName()"
+          >
+            ▶ START ADVENTURE
+          </button>
+
+
+          <button
+            class="secondary"
+            onclick="showWorldMap()"
+          >
+            🗺️ WORLD MAP
+          </button>
+
+        </div>
+
+
+        <div class="menu-row">
+
+          <button
+            class="secondary"
+            onclick="showReview()"
+          >
+            🔄 REVIEW QUEST
+          </button>
+
+
+          <button
+            class="secondary"
+            onclick="showBook()"
+          >
+            📖 MY WORD BOOK
+          </button>
+
+        </div>
+
       </div>
 
-      <div class="subtitle">
-        A 16-BIT ENGLISH RPG ADVENTURE · V9
+    </div>
+
+
+    <div class="footer">
+      66 WORDS • 6 CHAPTERS • 6 GAME MODES
+    </div>
+
+  `);
+}
+
+function showName() {
+
+  setScreen(`
+
+    <div class="top">
+
+      <div class="logo">
+        WONDERS WORD QUEST
       </div>
 
-      <div
-        class="panel"
-        style="
-          max-width:800px;
-          margin:35px auto
-        "
-      >
+      <div class="score">
+        SCORE ${state.score}
+      </div>
 
-        <h2>
-          YOUR HERO
-        </h2>
+    </div>
+
+
+    <div class="content">
+
+      ${titleBlock(
+        "WHO ARE YOU?",
+        "Enter your name and choose your hero."
+      )}
+
+
+      <div class="panel">
 
         <input
-          id="name"
+          id="playerName"
           class="name"
-          placeholder="ENTER YOUR NAME"
-          value="${esc(state.name)}"
-        >
+          maxlength="20"
+          placeholder="YOUR NAME"
+        />
+
 
         <div class="gender-grid">
 
           <button
-            id="boy"
+            id="boyBtn"
             class="gender ${
-              state.gender === "boy"
+              state.character === "boy"
                 ? "selected"
                 : ""
             }"
-            onclick="
-              chooseGender('boy')
-            "
+            onclick="chooseCharacter('boy')"
           >
-            👦 BOY
-
-            ${
-              state.gender === "boy"
-                ? `
-                  <span class="check">
-                    ✓ SELECTED
-                  </span>
-                `
-                : ""
-            }
-
+            <span class="check">♂</span>
+            <strong>BOY</strong>
           </button>
+
 
           <button
-            id="girl"
+            id="girlBtn"
             class="gender ${
-              state.gender === "girl"
+              state.character === "girl"
                 ? "selected"
                 : ""
             }"
-            onclick="
-              chooseGender('girl')
-            "
+            onclick="chooseCharacter('girl')"
           >
-            👧 GIRL
-
-            ${
-              state.gender === "girl"
-                ? `
-                  <span class="check">
-                    ✓ SELECTED
-                  </span>
-                `
-                : ""
-            }
-
+            <span class="check">♀</span>
+            <strong>GIRL</strong>
           </button>
 
         </div>
 
-        <div
-          id="heroStatus"
-          class="small"
-        >
-          ${
-            state.gender
-              ? `Selected: ${state.gender.toUpperCase()}`
-              : "Choose your hero"
-          }
-        </div>
 
         <button
           class="primary"
           onclick="startAdventure()"
         >
-          START ADVENTURE ▶
+          START QUEST →
+        </button>
+
+
+        <button
+          class="secondary"
+          onclick="renderHome()"
+        >
+          ← BACK
         </button>
 
       </div>
 
     </div>
+
   `);
 }
 
-function chooseGender(gender) {
+function chooseCharacter(character) {
 
-  state.gender = gender;
+  state.character = character;
 
-  save();
+  const boy =
+    $("#boyBtn");
 
-  boot();
+  const girl =
+    $("#girlBtn");
+
+  if (boy) {
+    boy.classList.toggle(
+      "selected",
+      character === "boy"
+    );
+  }
+
+  if (girl) {
+    girl.classList.toggle(
+      "selected",
+      character === "girl"
+    );
+  }
 }
 
 function startAdventure() {
 
-  const input = $("#name");
+  const input =
+    $("#playerName");
 
-  const name = input
-    ? input.value.trim()
-    : "";
+  const name =
+    input
+      ? input.value.trim()
+      : "";
 
-  if (!name || !state.gender) {
-
-    alert(
-      "Please enter your name and choose BOY or GIRL."
-    );
-
-    return;
+  if (name) {
+    state.player = name;
   }
 
-  state.name = name;
+  if (!state.player) {
+    state.player = "PLAYER";
+  }
 
   save();
 
-  showMap();
+  showWorldMap();
 }
 
-/* =========================================================
-   WORLD MAP
-========================================================= */
+function showWorldMap() {
 
-function showMap() {
+  const names =
+    chapterNames();
 
-  render(`
+  const cards =
+    names.map((name, index) => {
 
-    ${renderTop("🗺️ WONDERS WORLD")}
+      const chapter =
+        index + 1;
+
+      const unlocked =
+        chapter <=
+        Math.max(
+          1,
+          state.unlocked
+        );
+
+      const stars =
+        state.stars[chapter] || 0;
+
+      const completed =
+        !!state.completed[chapter];
+
+      const displayName =
+        name.replace(
+          /^Chapter \d+\s*[—-]\s*/,
+          ""
+        );
+
+      return `
+
+        <button
+          class="chapter ${
+            unlocked
+              ? "ready"
+              : "locked"
+          }"
+
+          ${
+            unlocked
+              ? `onclick="showChapter(${chapter})"`
+              : "disabled"
+          }
+        >
+
+          <div class="tag">
+            CHAPTER ${chapter}
+          </div>
+
+
+          <h3>
+            ${esc(displayName)}
+          </h3>
+
+
+          <div class="stars">
+            ${
+              "★".repeat(stars)
+            }${
+              "☆".repeat(3 - stars)
+            }
+          </div>
+
+
+          <div class="meta">
+
+            ${
+              completed
+                ? "COMPLETED"
+                : unlocked
+                  ? "READY"
+                  : "LOCKED"
+            }
+
+          </div>
+
+        </button>
+
+      `;
+    }).join("");
+
+
+  setScreen(`
+
+    <div class="top">
+
+      <div class="logo">
+        WORLD MAP
+      </div>
+
+      <div class="score">
+        SCORE ${state.score}
+      </div>
+
+    </div>
+
 
     <div class="content">
 
-      <div class="quest-head">
+      ${titleBlock(
+        "WONDERS WORLD",
+        "Choose a chapter. Replay completed chapters anytime."
+      )}
 
-        <h1>
-          WONDERS WORLD
-        </h1>
-
-        <div class="tag">
-          ${
-            state.gender === "boy"
-              ? "👦"
-              : "👧"
-          }
-
-          ${esc(state.name)}
-        </div>
-
-      </div>
 
       <div class="chapter-grid">
-
-        ${DATA.chapters
-          .map((chapter) => {
-
-            const unlocked =
-              chapter.id <= state.unlocked;
-
-            const complete =
-              !!state.chaptersDone[
-                chapter.id
-              ];
-
-            const star =
-              state.stars[
-                chapter.id
-              ] || 0;
-
-            return `
-
-              <button
-
-                class="chapter ${
-                  unlocked
-                    ? "ready"
-                    : "locked"
-                }"
-
-                ${
-                  unlocked
-                    ? `
-                      onclick="
-                        openChapter(
-                          ${chapter.id}
-                        )
-                      "
-                    `
-                    : "disabled"
-                }
-
-              >
-
-                <h3>
-                  CHAPTER ${chapter.id}
-                </h3>
-
-                <div>
-                  ${esc(chapter.title)}
-                </div>
-
-                <div class="stars">
-                  ${starText(star)}
-                </div>
-
-                <div class="meta">
-
-                  ${chapter.words.length}
-                  WORDS
-
-                  ·
-
-                  ${
-                    complete
-                      ? "✓ COMPLETE"
-                      : unlocked
-                      ? "READY"
-                      : "🔒 LOCKED"
-                  }
-
-                </div>
-
-              </button>
-
-            `;
-
-          })
-          .join("")}
-
+        ${cards}
       </div>
 
-      <div
-        class="menu-row"
-        style="margin-top:22px"
-      >
+
+      <div class="menu-row">
 
         <button
           class="secondary"
@@ -449,116 +572,160 @@ function showMap() {
           🔄 REVIEW QUEST
         </button>
 
+
         <button
           class="secondary"
           onclick="showBook()"
         >
-          📖 MY WORD BOOK
+          📖 WORD BOOK
         </button>
+
 
         <button
           class="secondary"
-          onclick="boot()"
+          onclick="renderHome()"
         >
-          👤 HERO
+          ← HOME
         </button>
 
       </div>
 
-      <div class="footer">
-        V9 · 每次練習都會重新抽單字、題型與選項。
-      </div>
-
     </div>
+
   `);
 }
 
-/* =========================================================
-   CHAPTER
-========================================================= */
+function modeIcon(mode) {
 
-function openChapter(id) {
+  return {
 
-  const chapter =
-    DATA.chapters.find(
-      (item) => item.id === id
+    picture: "🖼️",
+
+    meaning: "📝",
+
+    spell: "🔤",
+
+    scramble: "🧩",
+
+    sentence: "💬",
+
+    attack: "⚡"
+
+  }[mode] || "🎮";
+}
+
+function modeLabel(mode) {
+
+  return {
+
+    picture:
+      "PICTURE MATCH",
+
+    meaning:
+      "WORD → MEANING",
+
+    spell:
+      "SPELL IT",
+
+    scramble:
+      "SCRAMBLE",
+
+    sentence:
+      "SENTENCE QUEST",
+
+    attack:
+      "WORD ATTACK"
+
+  }[mode] ||
+    String(mode).toUpperCase();
+}
+
+function showChapter(chapter) {
+
+  const words =
+    chapterWords(chapter);
+
+  const name =
+    chapterNames()[chapter - 1] ||
+    `Chapter ${chapter}`;
+
+  const displayName =
+    name.replace(
+      /^Chapter \d+\s*[—-]\s*/,
+      ""
     );
 
-  if (!chapter) return;
 
-  render(`
+  setScreen(`
 
-    ${renderTop()}
+    <div class="top">
+
+      <div class="logo">
+        CHAPTER ${chapter}
+      </div>
+
+      <div class="score">
+        SCORE ${state.score}
+      </div>
+
+    </div>
+
 
     <div class="content">
 
-      <div class="quest-head">
+      ${titleBlock(
+        displayName,
+        `${words.length} words • ${MODES.length} game modes`
+      )}
 
-        ${menuBtn()}
 
-        <div>
-
-          <h1>
-            CHAPTER ${id}
-          </h1>
-
-          <div class="tag">
-            ${esc(chapter.title)}
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="panel center">
-
-        <h2>
-          ${esc(
-            chapter.theme ||
-            chapter.title
-          )}
-        </h2>
-
-        <p>
-          本章 ${chapter.words.length}
-          個單字。<br>
-          每次挑戰都會重新亂數。
-        </p>
+      <div class="panel">
 
         <div class="mode-grid">
 
-          ${shuffle(MODES)
-            .map(
-              (mode) => `
+          ${MODES.map(mode => `
 
-                <div
-                  class="panel mode"
-                >
+            <div class="mode">
 
-                  <div class="mode-badge">
-                    ${MODE_INFO[mode][0]}
-                  </div>
+              <div class="mode-badge">
+                ${modeIcon(mode)}
+              </div>
 
-                  <small>
-                    ${MODE_INFO[mode][1]}
-                  </small>
+              <strong>
+                ${modeLabel(mode)}
+              </strong>
 
-                </div>
+            </div>
 
-              `
-            )
-            .join("")}
+          `).join("")}
 
         </div>
 
-        <button
-          class="primary"
-          onclick="
-            startQuest(${id})
-          "
-        >
-          START RANDOM QUEST ▶
-        </button>
+
+        <p>
+          Every quest randomizes the words,
+          question types, and choices.
+        </p>
+
+
+        <div class="menu-row">
+
+          <button
+            class="primary"
+            onclick="startQuest(${chapter}, false)"
+          >
+            ▶ START QUEST
+          </button>
+
+
+          <button
+            class="secondary"
+            onclick="showWorldMap()"
+          >
+            ← MAP
+          </button>
+
+        </div>
 
       </div>
 
@@ -566,886 +733,143 @@ function openChapter(id) {
 
   `);
 }
-
-/* =========================================================
-   WEAK WORDS
-========================================================= */
-
-function getWeakWords(chapter) {
-
-  return chapter.words.filter(
-    (word) => {
-
-      const mastery =
-        state.mastery[
-          wordEN(word)
-        ] || {};
-
-      return (
-        (mastery.wrong || 0) > 0
-      );
-    }
-  );
-}
-
-/* =========================================================
-   QUEST
-========================================================= */
-
-function startQuest(
-  id,
-  review = false
-) {
-
-  const chapter =
-    DATA.chapters.find(
-      (item) => item.id === id
-    );
-
-  if (!chapter) return;
-
-  let pool = [
-    ...chapter.words
-  ];
-
-  if (review) {
-
-    const weak =
-      getWeakWords(chapter);
-
-    if (weak.length) {
-      pool = weak;
-    }
-  }
-
-  pool = shuffle(pool);
-
-  const count =
-    Math.min(10, pool.length);
-
-  session = {
-
-    id,
-
-    review,
-
-    words:
-      pool.slice(0, count),
-
-    q: 0,
-
-    correct: 0,
-
-    modeHistory: [],
-
-    selected: [],
-
-    timer: null,
-
-    left: 30,
-
-    locked: false
-
-  };
-
-  nextQuestion();
-}
-
-/* =========================================================
-   RANDOM MODE
-========================================================= */
 
 function chooseNextMode() {
 
   const previous =
-    session.modeHistory[
-      session.modeHistory.length - 1
-    ];
+    session.lastMode;
 
-  let choices =
+  const candidates =
     MODES.filter(
-      (mode) =>
-        mode !== previous
+      mode => mode !== previous
     );
 
-  if (!choices.length) {
-    choices = [...MODES];
-  }
-
-  return choices[
-    Math.floor(
-      Math.random() *
-      choices.length
-    )
-  ];
-}
-
-/* =========================================================
-   NEXT QUESTION
-========================================================= */
-
-function nextQuestion() {
-
-  if (
-    !session ||
-    session.q >=
-      session.words.length
-  ) {
-
-    finishQuest();
-
-    return;
-  }
-
-  const word =
-    session.words[
-      session.q
+  const mode =
+    candidates[
+      Math.floor(
+        Math.random() *
+        candidates.length
+      )
     ];
 
-  const mode =
-    chooseNextMode();
+  session.lastMode =
+    mode;
 
-  session.mode = mode;
-
-  session.modeHistory.push(
-    mode
-  );
-
-  session.selected = [];
-
-  session.locked = false;
-
-  renderQuestion(
-    word,
-    mode
-  );
+  return mode;
 }
 
-/* =========================================================
-   OPTIONS
-========================================================= */
-
-function getOtherWords(
-  chapter,
-  currentEN,
-  count = 3
-) {
-
-  return shuffle(
-    chapter.words.filter(
-      (word) =>
-        wordEN(word) !== currentEN
-    )
-  ).slice(0, count);
+function chooseNextMode() {
+    ...
 }
 
-function makeChoiceButtons(
-  options,
-  answer
+
+function renderFeedback(
+  correct,
+  target,
+  timedOut
 ) {
 
-  return `
+  const word =
+    normalizeWord(
+      session.words[
+        session.q
+      ]
+    );
 
-    <div class="choices">
 
-      ${shuffle(options)
-        .map(
-          (option) => `
+  let message =
+    "TRY AGAIN!";
 
-            <button
-              class="choice"
 
-              onclick='
-                answerValue(
-                  ${JSON.stringify(option)},
-                  ${JSON.stringify(answer)}
-                )
-              '
-            >
-              ${esc(option)}
-            </button>
+  if (timedOut) {
 
-          `
-        )
-        .join("")}
+    message =
+      "TIME'S UP!";
+
+  } else if (correct) {
+
+    message =
+      "CORRECT!";
+
+  }
+
+
+  setScreen(`
+
+    <div class="top">
+
+      <div class="logo">
+        ${esc(
+          modeLabel(
+            session.mode
+          )
+        )}
+      </div>
+
+
+      <div class="score">
+        SCORE ${state.score}
+      </div>
 
     </div>
 
-  `;
-}
-
-/* =========================================================
-   QUESTION RENDER
-========================================================= */
-
-function renderQuestion(
-  word,
-  mode
-) {
-
-  const en =
-    wordEN(word);
-
-  const zh =
-    wordZH(word);
-
-  const chapter =
-    DATA.chapters.find(
-      (item) =>
-        item.id === session.id
-    );
-
-  let body = "";
-
-  /* -------------------------------------------------------
-     PICTURE MATCH
-  ------------------------------------------------------- */
-
-  if (mode === "picture") {
-
-    const options = [
-
-      en,
-
-      ...getOtherWords(
-        chapter,
-        en
-      ).map(wordEN)
-
-    ];
-
-    body = `
-
-      <div class="question">
-
-        ${esc(
-          wordVisual(word)
-        )}
-
-      </div>
-
-      <div class="prompt">
-        Which word matches the picture clue?
-      </div>
-
-      <div class="panel center">
-
-        <div
-          style="
-            font-size:
-              clamp(
-                16px,
-                1.7vw,
-                26px
-              );
-
-            color:#d8e8f5;
-          "
-        >
-
-          ${esc(zh)}
-
-        </div>
-
-        <div
-          class="small"
-          style="margin-top:10px"
-        >
-
-          Look at the visual clue
-          and choose the best word.
-
-        </div>
-
-      </div>
-
-      ${makeChoiceButtons(
-        options,
-        en
-      )}
-
-    `;
-  }
-
-  /* -------------------------------------------------------
-     WORD → MEANING
-  ------------------------------------------------------- */
-
-  else if (mode === "meaning") {
-
-    const options = [
-
-      zh,
-
-      ...getOtherWords(
-        chapter,
-        en
-      ).map(wordZH)
-
-    ];
-
-    body = `
-
-      <div class="question">
-        ${esc(en)}
-      </div>
-
-      <div class="prompt">
-        What does this word mean?
-      </div>
-
-      ${makeChoiceButtons(
-        options,
-        zh
-      )}
-
-    `;
-  }
-
-  /* -------------------------------------------------------
-     SPELL
-  ------------------------------------------------------- */
-
-  else if (mode === "spell") {
-
-    body = `
-
-      <div class="question">
-        ${esc(zh)}
-      </div>
-
-      <div class="prompt">
-        Spell the English word.
-      </div>
-
-      <input
-        id="spellInput"
-        class="name"
-
-        style="
-          margin:20px auto
-        "
-
-        autocomplete="off"
-        autocapitalize="none"
-        spellcheck="false"
-
-        onkeydown="
-          if(event.key==='Enter')
-            checkSpell()
-        "
-      >
-
-      <button
-        class="primary"
-        onclick="checkSpell()"
-      >
-        CHECK ✓
-      </button>
-
-    `;
-  }
-
-  /* -------------------------------------------------------
-     SCRAMBLE
-  ------------------------------------------------------- */
-
-  else if (
-    mode === "scramble"
-  ) {
-
-    const letters =
-      shuffle(
-        en
-          .replace(/\s/g, "")
-          .split("")
-      );
-
-    body = `
-
-      <div class="question">
-        ${esc(zh)}
-      </div>
-
-      <div class="prompt">
-        Tap the letters in the correct order.
-      </div>
-
-      <div
-        id="scrambleAnswer"
-        class="answer"
-      ></div>
-
-      <div class="scramble">
-
-        ${letters
-          .map(
-            (letter, index) => `
-
-              <button
-                class="letter"
-                id="letter${index}"
-
-                onclick="
-                  pickLetter(
-                    ${index}
-                  )
-                "
-              >
-                ${esc(
-                  letter.toUpperCase()
-                )}
-              </button>
-
-            `
-          )
-          .join("")}
-
-      </div>
-
-      <button
-        class="primary"
-        onclick="checkScramble()"
-      >
-        CHECK ✓
-      </button>
-
-    `;
-  }
-
-  /* -------------------------------------------------------
-     SENTENCE QUEST
-  ------------------------------------------------------- */
-
-  else if (
-    mode === "sentence"
-  ) {
-
-    const options = [
-
-      en,
-
-      ...getOtherWords(
-        chapter,
-        en
-      ).map(wordEN)
-
-    ];
-
-    body = `
-
-      <div class="question">
-
-        ${esc(
-          wordSentence(word)
-        )}
-
-      </div>
-
-      <div class="prompt">
-        Which vocabulary word
-        completes the idea?
-      </div>
-
-      ${makeChoiceButtons(
-        options,
-        en
-      )}
-
-    `;
-  }
-
-  /* -------------------------------------------------------
-     WORD ATTACK
-  ------------------------------------------------------- */
-
-  else {
-
-    const options = [
-
-      en,
-
-      ...getOtherWords(
-        chapter,
-        en
-      ).map(wordEN)
-
-    ];
-
-    body = `
-
-      <div class="question">
-
-        ⚡ ${esc(zh)}
-
-      </div>
-
-      <div class="prompt">
-        WORD ATTACK!
-        Choose quickly!
-      </div>
-
-      ${makeChoiceButtons(
-        options,
-        en
-      )}
-
-    `;
-  }
-
-  render(`
-
-    ${renderTop()}
 
     <div class="content">
 
-      <div class="quest-head">
+      <div
+        class="panel feedback ${
+          correct
+            ? "result"
+            : ""
+        }"
+      >
 
-        <div>
-          ${menuBtn()}
+        <div class="big">
+          ${message}
         </div>
 
-        <div
-          class="timer"
-          id="timer"
+
+        <div class="word">
+          ${esc(target)}
+        </div>
+
+
+        <div class="small">
+          ${esc(word.m)}
+        </div>
+
+
+        ${
+          !correct
+            ? `
+              <p>
+                The correct answer is
+                <strong>
+                  ${esc(target)}
+                </strong>.
+              </p>
+            `
+            : ""
+        }
+
+
+        <button
+          class="primary"
+          onclick="nextQuestion()"
         >
-          30
-        </div>
-
-      </div>
-
-      <div class="progress">
-
-        <div
-          style="
-            width:
-              ${
-                session.q /
-                session.words.length *
-                100
-              }%
-          "
-        ></div>
-
-      </div>
-
-      <div
-        class="panel"
-        style="
-          margin-top:18px
-        "
-      >
-
-        <div class="mode-badge">
-
-          ${MODE_INFO[mode][0]}
-
-        </div>
-
-        ${body}
-
-        <div
-          id="feedback"
-          class="feedback"
-        ></div>
-
-      </div>
-
-      <div
-        class="small center"
-        style="
-          margin-top:12px
-        "
-      >
-
-        Question
-        ${session.q + 1}
-        /
-        ${session.words.length}
+          NEXT →
+        </button>
 
       </div>
 
     </div>
 
   `);
-
-  startTimer();
 }
+
 
 /* =========================================================
-   TIMER
-========================================================= */
-
-function startTimer() {
-
-  clearInterval(
-    session.timer
-  );
-
-  session.left = 30;
-
-  const timer =
-    $("#timer");
-
-  if (timer) {
-    timer.textContent = "30";
-  }
-
-  session.timer =
-    setInterval(() => {
-
-      session.left--;
-
-      const el =
-        $("#timer");
-
-      if (el) {
-        el.textContent =
-          session.left;
-      }
-
-      if (
-        session.left <= 0
-      ) {
-
-        clearInterval(
-          session.timer
-        );
-
-        handleAnswer(
-          null,
-          null,
-          true
-        );
-      }
-
-    }, 1000);
-}
-
-/* =========================================================
-   ANSWER
-========================================================= */
-
-function answerValue(
-  got,
-  correct
-) {
-
-  if (session.locked)
-    return;
-
-  clearInterval(
-    session.timer
-  );
-
-  handleAnswer(
-    String(got),
-    String(correct),
-    false
-  );
-}
-
-function handleAnswer(
-  got,
-  correct,
-  timeout = false
-) {
-
-  if (
-    !session ||
-    session.locked
-  ) return;
-
-  session.locked = true;
-
-  clearInterval(
-    session.timer
-  );
-
-  const currentWord =
-    session.words[
-      session.q
-    ];
-
-  const key =
-    wordEN(currentWord);
-
-  if (!state.mastery[key]) {
-
-    state.mastery[key] = {
-
-      correct: 0,
-      wrong: 0,
-      attempts: 0
-
-    };
-  }
-
-  const mastery =
-    state.mastery[key];
-
-  mastery.attempts++;
-
-  const actualAnswer =
-    timeout
-      ? key
-      : correct;
-
-  const ok =
-    !timeout &&
-    String(got)
-      .trim()
-      .toLowerCase() ===
-
-    String(correct)
-      .trim()
-      .toLowerCase();
-
-  if (ok) {
-
-    mastery.correct++;
-
-    state.score += 100;
-
-    session.correct++;
-
-  } else {
-
-    mastery.wrong++;
-
-    state.score =
-      Math.max(
-        0,
-        state.score - 20
-      );
-  }
-
-  save();
-
-  const feedback =
-    $("#feedback");
-
-  if (feedback) {
-
-    feedback.textContent =
-      timeout
-
-        ? `⏰ Time up! Answer: ${actualAnswer}`
-
-        : ok
-
-        ? "✅ Correct!"
-
-        : `❌ Correct answer: ${actualAnswer}`;
-  }
-
-  setTimeout(() => {
-
-    session.q++;
-
-    nextQuestion();
-
-  }, 650);
-}
-
-/* =========================================================
-   SPELL CHECK
-========================================================= */
-
-function checkSpell() {
-
-  const input =
-    $("#spellInput");
-
-  if (!input) return;
-
-  handleAnswer(
-
-    input.value
-      .trim()
-      .toLowerCase(),
-
-    wordEN(
-      session.words[
-        session.q
-      ]
-    )
-      .toLowerCase(),
-
-    false
-
-  );
-}
-
-/* =========================================================
-   SCRAMBLE
-========================================================= */
-
-function pickLetter(index) {
-
-  if (
-    session.locked ||
-    session.selected.includes(index)
-  ) return;
-
-  session.selected.push(index);
-
-  const button =
-    $(`#letter${index}`);
-
-  if (button) {
-    button.disabled = true;
-  }
-
-  const answer =
-    session.selected
-      .map(
-        (i) =>
-          $(`#letter${i}`)
-            .textContent
-            .toLowerCase()
-      )
-      .join("");
-
-  const output =
-    $("#scrambleAnswer");
-
-  if (output) {
-    output.textContent =
-      answer;
-  }
-}
-
-function checkScramble() {
-
-  const target =
-    wordEN(
-      session.words[
-        session.q
-      ]
-    )
-      .replace(/\s/g, "")
-      .toLowerCase();
-
-  const got =
-    session.selected
-      .map(
-        (i) =>
-          $(`#letter${i}`)
-            .textContent
-            .toLowerCase()
-      )
-      .join("");
-
-  handleAnswer(
-    got,
-    target,
-    false
-  );
-}
-
-/* =========================================================
-   FINISH
+   QUEST 完成
 ========================================================= */
 
 function finishQuest() {
@@ -1454,106 +878,251 @@ function finishQuest() {
     session.timer
   );
 
+
   const total =
     session.words.length;
 
-  const percent =
+
+  const ratio =
     total
-      ? Math.round(
-          session.correct /
-          total *
-          100
-        )
+      ? session.correct / total
       : 0;
 
-  const earned =
-    percent >= 90
-      ? 3
-      : percent >= 70
-      ? 2
-      : 1;
+
+  /*
+    星星規則
+
+    1★ = 完成
+    2★ = 70% 以上
+    3★ = 90% 以上
+          且速度夠快
+  */
+
+  let stars = 1;
+
+
+  if (
+    ratio >= 0.7
+  ) {
+
+    stars = 2;
+
+  }
+
+
+  if (
+    ratio >= 0.9 &&
+    session.words.every(
+      word =>
+        getMastery(word)
+          .bestTime <= 20
+    )
+  ) {
+
+    stars = 3;
+
+  }
+
+
+  /*
+    保留歷史最高星數
+  */
 
   const oldStars =
     state.stars[
-      session.id
+      session.chapter
     ] || 0;
 
-  if (
-    earned >
-    oldStars
-  ) {
 
-    state.stars[
-      session.id
-    ] = earned;
-  }
+  state.stars[
+    session.chapter
+  ] =
+    Math.max(
+      oldStars,
+      stars
+    );
 
-  state.chaptersDone[
-    session.id
+
+  /*
+    完成章節
+  */
+
+  state.completed[
+    session.chapter
   ] = true;
 
-  if (
-    session.id ===
-      state.unlocked &&
 
-    state.unlocked <
-      DATA.chapters.length
+  /*
+    解鎖下一章
+  */
+
+  if (
+    session.chapter <
+    chapterNames().length
   ) {
 
-    state.unlocked++;
+    state.unlocked =
+      Math.max(
+        state.unlocked,
+        session.chapter + 1
+      );
+
   }
+
+
+  /*
+    成就
+  */
+
+  if (
+    stars >= 3 &&
+    !state.achievements.includes(
+      "THREE_STAR"
+    )
+  ) {
+
+    state.achievements.push(
+      "THREE_STAR"
+    );
+
+  }
+
+
+  if (
+    session.correct === total &&
+    !state.achievements.includes(
+      "PERFECT"
+    )
+  ) {
+
+    state.achievements.push(
+      "PERFECT"
+    );
+
+  }
+
 
   save();
 
-  render(`
 
-    ${renderTop()}
+  /*
+    下一章按鈕
+  */
 
-    <div class="content result">
+  let nextButton = "";
 
-      <div class="panel">
+
+  if (
+    session.chapter <
+    chapterNames().length
+  ) {
+
+    nextButton = `
+
+      <button
+        class="primary"
+        onclick="
+          showChapter(
+            ${session.chapter + 1}
+          )
+        "
+      >
+        NEXT CHAPTER →
+      </button>
+
+    `;
+
+  } else {
+
+    nextButton = `
+
+      <button
+        class="primary"
+        onclick="showWorldMap()"
+      >
+        🏆 WORLD MAP
+      </button>
+
+    `;
+
+  }
+
+
+  setScreen(`
+
+    <div class="top">
+
+      <div class="logo">
+        QUEST COMPLETE
+      </div>
+
+
+      <div class="score">
+        SCORE ${state.score}
+      </div>
+
+    </div>
+
+
+    <div class="content">
+
+      <div class="panel result">
 
         <div class="big">
-          ${starText(earned)}
+          QUEST COMPLETE!
         </div>
 
-        <h1>
+
+        <div class="stars">
+
           ${
-            session.review
-              ? "REVIEW COMPLETE"
-              : "QUEST COMPLETE"
+            "★".repeat(stars)
+          }${
+            "☆".repeat(
+              3 - stars
+            )
           }
-        </h1>
+
+        </div>
+
 
         <p>
-          Correct:
-          ${session.correct}/${total}
-          (${percent}%)
+          ${session.correct}
+          /
+          ${total}
+          correct
         </p>
 
+
         <p>
-          下一次會重新抽單字、
-          題型與選項。
+          1★ I came •
+          2★ I can •
+          3★ I'm really strong!
         </p>
+
 
         <div class="menu-row">
 
-          <button
-            class="primary"
-            onclick="
-              openChapter(
-                ${session.id}
-              )
-            "
-          >
-            PLAY AGAIN 🔀
-          </button>
+          ${nextButton}
+
 
           <button
             class="secondary"
-            onclick="showMap()"
+            onclick="
+              showChapter(
+                ${session.chapter}
+              )
+            "
           >
-            WORLD MAP
+            ↻ PLAY AGAIN
+          </button>
+
+
+          <button
+            class="secondary"
+            onclick="showWorldMap()"
+          >
+            🗺️ MAP
           </button>
 
         </div>
@@ -1564,6 +1133,7 @@ function finishQuest() {
 
   `);
 }
+
 
 /* =========================================================
    REVIEW QUEST
@@ -1571,259 +1141,446 @@ function finishQuest() {
 
 function showReview() {
 
-  const weakCount =
-    Object.values(
-      state.mastery
-    )
-      .filter(
-        (m) =>
-          (m.wrong || 0) > 0
+  /*
+    找出需要加強的單字
+  */
+
+  const weak =
+    allWords()
+      .filter(word => {
+
+        const mastery =
+          getMastery(word);
+
+
+        return (
+          mastery.wrong > 0 ||
+          mastery.star < 2 ||
+          mastery.bestTime > 20
+        );
+
+      })
+      .sort(
+        (a, b) => {
+
+          const A =
+            getMastery(a);
+
+          const B =
+            getMastery(b);
+
+
+          /*
+            優先順序：
+
+            ① 錯很多
+            ② 正確率較低
+            ③ 花費時間較久
+          */
+
+          return (
+            (B.wrong - A.wrong) ||
+            (A.correct - B.correct) ||
+            (B.bestTime - A.bestTime)
+          );
+
+        }
       )
-      .length;
+      .slice(
+        0,
+        12
+      );
 
-  render(`
 
-    ${renderTop()}
+  let rows = "";
 
-    <div class="content">
 
-      <div class="quest-head">
+  if (
+    weak.length
+  ) {
 
-        ${menuBtn()}
+    rows =
+      weak
+        .map(word => {
 
-        <h1>
-          🔄 REVIEW QUEST
-        </h1>
+          const mastery =
+            getMastery(word);
+
+
+          return `
+
+            <div class="question">
+
+              <strong>
+                ${esc(
+                  wordEN(word)
+                )}
+              </strong>
+
+
+              <br>
+
+
+              <span class="small">
+
+                ${esc(
+                  wordZH(word)
+                )}
+
+                •
+
+                ${mastery.correct}
+                /
+                ${mastery.attempts}
+                correct
+
+              </span>
+
+            </div>
+
+          `;
+
+        })
+        .join("");
+
+
+  } else {
+
+    rows = `
+
+      <div class="question">
+
+        <strong>
+          No weak words yet!
+        </strong>
+
+
+        <br>
+
+
+        <span class="small">
+          Keep adventuring and
+          build your word power!
+        </span>
 
       </div>
 
-      <div class="panel center">
+    `;
 
-        <h2>
-          SMART RANDOM REVIEW
-        </h2>
+  }
 
-        <p>
-          系統會優先抽曾答錯的單字。<br>
-          題型與選項也會重新亂數。
-        </p>
 
-        <div class="tag">
-          Weak words:
-          ${weakCount}
-        </div>
+  setScreen(`
 
-        <div
-          class="chapter-grid"
-          style="
-            margin-top:18px
-          "
-        >
+    <div class="top">
 
-          ${DATA.chapters
-            .filter(
-              (chapter) =>
-                chapter.id <=
-                state.unlocked
-            )
+      <div class="logo">
+        REVIEW QUEST
+      </div>
+
+
+      <div class="score">
+        SCORE ${state.score}
+      </div>
+
+    </div>
+
+
+    <div class="content">
+
+      ${titleBlock(
+        "REVIEW QUEST",
+        "Practice words that need more attention."
+      )}
+
+
+      <div class="panel">
+
+        ${rows}
+
+      </div>
+
+
+      <div class="menu-row">
+
+        ${
+          chapterNames()
             .map(
-              (chapter) => `
+              (_, index) => `
 
                 <button
-                  class="chapter ready"
-
+                  class="secondary"
                   onclick="
                     startQuest(
-                      ${chapter.id},
+                      ${index + 1},
                       true
                     )
                   "
                 >
-
-                  <h3>
-                    CHAPTER
-                    ${chapter.id}
-                  </h3>
-
-                  <div>
-                    ${esc(
-                      chapter.title
-                    )}
-                  </div>
-
-                  <div class="meta">
-                    REVIEW
-                    ${chapter.words.length}
-                    WORDS
-                  </div>
-
+                  REVIEW CH.${index + 1}
                 </button>
 
               `
             )
-            .join("")}
-
-        </div>
+            .join("")
+        }
 
       </div>
+
+
+      <button
+        class="secondary"
+        onclick="showWorldMap()"
+      >
+        ← MAP
+      </button>
 
     </div>
 
   `);
 }
 
+
 /* =========================================================
-   WORD BOOK
+   MY WORD BOOK
 ========================================================= */
 
 function showBook() {
 
-  const words =
-    DATA.chapters.flatMap(
-      (chapter) =>
-        chapter.words
-    );
+  const rows =
+    allWords()
+      .map(word => {
 
-  render(`
+        const mastery =
+          getMastery(word);
 
-    ${renderTop()}
+
+        /*
+          Word Book 顯示最高星數
+        */
+
+        const stars =
+          Math.min(
+            3,
+            mastery.star || 0
+          );
+
+
+        return `
+
+          <div class="question">
+
+            <strong>
+              ${esc(
+                wordEN(word)
+              )}
+            </strong>
+
+
+            —
+
+            ${esc(
+              wordZH(word)
+            )}
+
+
+            <span class="stars">
+
+              ${
+                "★".repeat(stars)
+              }${
+                "☆".repeat(
+                  3 - stars
+                )
+              }
+
+            </span>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+  setScreen(`
+
+    <div class="top">
+
+      <div class="logo">
+        MY WORD BOOK
+      </div>
+
+
+      <div class="score">
+        SCORE ${state.score}
+      </div>
+
+    </div>
+
 
     <div class="content">
 
-      <div class="quest-head">
+      ${titleBlock(
+        "MY WORD BOOK",
+        "Your 66-word collection"
+      )}
 
-        ${menuBtn()}
 
-        <h1>
-          📖 MY WORD BOOK
-        </h1>
+      <div class="panel">
 
-      </div>
-
-      <div class="wordbook">
-
-        ${words
-          .map((word) => {
-
-            const en =
-              wordEN(word);
-
-            const zh =
-              wordZH(word);
-
-            const mastery =
-              state.mastery[en]
-              || {};
-
-            const correct =
-              mastery.correct
-              || 0;
-
-            return `
-
-              <div class="word">
-
-                <strong>
-                  ${esc(en)}
-                </strong>
-
-                <span>
-                  ${esc(zh)}
-                </span>
-
-                <div class="stars">
-
-                  ${
-                    correct >= 3
-                      ? "★★★"
-                      : correct >= 1
-                      ? "★★☆"
-                      : "★☆☆"
-                  }
-
-                </div>
-
-              </div>
-
-            `;
-
-          })
-          .join("")}
+        ${rows}
 
       </div>
+
+
+      <button
+        class="secondary"
+        onclick="showWorldMap()"
+      >
+        ← MAP
+      </button>
 
     </div>
 
   `);
 }
 
+
 /* =========================================================
-   START
+   儲存離開前再存一次
 ========================================================= */
 
-load();
+window.addEventListener(
+  "beforeunload",
+  () => {
 
-fetch(
-  DATA_URL,
-  {
-    cache: "no-store"
+    if (
+      session &&
+      session.timer
+    ) {
+
+      clearInterval(
+        session.timer
+      );
+
+    }
+
+
+    save();
+
   }
-)
+);
 
-  .then((response) => {
+/* =========================================================
+   WONDERS WORD QUEST
+   V9.1 — DATA INITIALIZATION
+========================================================= */
+
+fetch("data.json")
+
+  .then(response => {
 
     if (!response.ok) {
 
       throw new Error(
-        `data.json failed to load: ${response.status}`
+        `data.json HTTP ${response.status}`
       );
+
     }
 
     return response.json();
+
   })
 
-  .then((data) => {
 
-    DATA = data;
+  .then(data => {
+
+    /*
+      載入 6 個 Chapter
+    */
+
+    WORDS = data;
+
+
+    /*
+      確認資料是否正常
+    */
+
+    console.log(
+      "WONDERS WORD QUEST DATA LOADED"
+    );
+
+
+    console.log(
+      "Chapters:",
+      chapterNames().length
+    );
+
+
+    console.log(
+      "Words:",
+      allWords().length
+    );
+
+
+    /*
+      啟動遊戲
+    */
 
     boot();
 
   })
 
-  .catch((error) => {
 
-    console.error(error);
+  .catch(error => {
 
-    const app =
-      $("#app");
+    console.error(
+      "WONDERS WORD QUEST LOAD ERROR:",
+      error
+    );
 
-    if (app) {
 
-      app.innerHTML = `
+    /*
+      如果 data.json 找不到，
+      顯示明確錯誤
+    */
 
-        <div
-          style="
-            padding:40px;
-            color:white;
-            font-family:Arial,sans-serif
-          "
-        >
+    document.body.innerHTML = `
 
-          <h2>
-            Unable to load game data.
-          </h2>
+      <div
+        style="
+          padding:40px;
+          font-family:sans-serif;
+          text-align:center;
+        "
+      >
 
-          <p>
-            ${esc(error.message)}
-          </p>
+        <h2>
+          WONDERS WORD QUEST
+        </h2>
 
-          <p>
-            Please refresh the page.
-          </p>
 
-        </div>
+        <p>
+          ⚠️ Unable to load data.json
+        </p>
 
-      `;
-    }
+
+        <p>
+          ${esc(error.message)}
+        </p>
+
+
+        <p>
+          Please make sure
+          <strong>data.json</strong>
+          is in the same folder as
+          <strong>index.html</strong>.
+        </p>
+
+      </div>
+
+    `;
 
   });
