@@ -1,7 +1,6 @@
-WONDERS WORD QUEST — V11.1 PICTURE MATCH FIX
-
-PICTURE MATCH：66 張獨立圖片均不顯示英文單字或中文意思，避免圖片直接洩漏答案。
-其餘遊戲功能與 V11 FINAL 相同。
-
-
-V11.2 修正：WORD → MEANING、WORD ATTACK 使用 meaning 作為正確答案；SENTENCE QUEST 使用英文單字作為正確答案；各模式的選項類型與判題目標已分離。
+WONDERS WORD QUEST — COMPLETE V11 FINAL
+1. 將整個資料夾內容完整取代 GitHub repository 的舊檔案。
+2. GitHub Pages 使用 main branch / root。
+3. 遊戲包含 6 Chapters、66 words、6 game modes、30 秒計時、隨機出題、圖片配對、Scramble、Word Book、Review Quest、Stars、Auto Save。
+4. 每個 66 單字都有自己的獨立圖片檔，路徑位於 assets/images/。
+5. 本版圖片採用輕量 SVG 圖卡，確保手機載入速度；之後可再逐張升級成更完整的 16-bit 場景圖。
