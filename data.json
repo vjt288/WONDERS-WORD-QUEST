@@ -1,1 +1,112 @@
-{"chapters": [{"id": 1, "code": "CHAPTER 1", "title": "Maria Celebrates Brazil", "words": [{"w": "aside", "m": "到一旁"}, {"w": "plead", "m": "懇求"}, {"w": "fair", "m": "公平的／市集"}, {"w": "share", "m": "分享"}, {"w": "invited", "m": "被邀請"}, {"w": "scurries", "m": "急匆匆地跑"}, {"w": "language", "m": "語言"}, {"w": "culture", "m": "文化"}, {"w": "parade", "m": "遊行"}, {"w": "practice", "m": "練習"}, {"w": "beat", "m": "節拍／擊打"}, {"w": "costumes", "m": "服裝／戲服"}, {"w": "crowd", "m": "人群"}, {"w": "proud", "m": "驕傲的"}, {"w": "chance", "m": "機會"}]}, {"id": 2, "code": "CHAPTER 2", "title": "A Look at Families", "words": [{"w": "common", "m": "共同的／常見的"}, {"w": "differences", "m": "不同之處"}, {"w": "include", "m": "包含"}, {"w": "light", "m": "輕的／光線"}, {"w": "near", "m": "附近的"}, {"w": "row", "m": "一排／划船"}, {"w": "stilts", "m": "高蹺"}]}, {"id": 3, "code": "CHAPTER 3", "title": "Secret Nest", "words": [{"w": "actions", "m": "行動／動作"}, {"w": "afraid", "m": "害怕的"}, {"w": "depend on", "m": "取決於／依靠"}, {"w": "fall", "m": "掉落／跌倒"}, {"w": "flapped", "m": "拍打（翅膀）"}, {"w": "ground", "m": "地面"}, {"w": "nervously", "m": "緊張地"}, {"w": "nest", "m": "鳥巢"}, {"w": "patch", "m": "一小塊／補丁"}, {"w": "peered", "m": "仔細看／凝視"}, {"w": "perfectly", "m": "完美地"}, {"w": "rescue", "m": "救援／營救"}, {"w": "secret", "m": "秘密"}, {"w": "uneasy", "m": "不安的"}, {"w": "worms", "m": "蠕蟲"}]}, {"id": 4, "code": "CHAPTER 4", "title": "Harvest Adventure", "words": [{"w": "blocked", "m": "被阻擋的／堵住的"}, {"w": "chopped", "m": "切碎的／砍下的"}, {"w": "harvest", "m": "收穫／收成"}, {"w": "rewad", "m": "待確認"}, {"w": "rumbled", "m": "發出隆隆聲／轟隆作響"}, {"w": "tugged", "m": "拉／用力拉扯"}, {"w": "waists", "m": "腰部／腰圍"}]}, {"id": 5, "code": "CHAPTER 5", "title": "Wild Horse Valley", "words": [{"w": "allowed", "m": "被允許的"}, {"w": "excited", "m": "興奮的"}, {"w": "grooms", "m": "梳理／照料（動物）"}, {"w": "hay", "m": "乾草"}, {"w": "mane", "m": "鬃毛"}, {"w": "needs", "m": "需要"}, {"w": "roam", "m": "漫遊／自由走動"}, {"w": "saddle", "m": "馬鞍"}, {"w": "safe", "m": "安全的"}, {"w": "smooth", "m": "平滑的／順滑的"}, {"w": "stall", "m": "馬廄／畜欄"}, {"w": "strokes", "m": "輕撫／撫摸"}, {"w": "take care of", "m": "照顧"}, {"w": "wandered", "m": "漫步／閒逛"}, {"w": "wild", "m": "野生的／野外的"}]}, {"id": 6, "code": "CHAPTER 6", "title": "Animal Shelter", "words": [{"w": "animal shelter", "m": "動物收容所"}, {"w": "different", "m": "不同的"}, {"w": "exercise", "m": "運動／鍛鍊"}, {"w": "in charge of", "m": "負責"}, {"w": "leash", "m": "牽繩"}, {"w": "owner", "m": "主人／飼主"}, {"w": "veterinarian", "m": "獸醫"}]}]}
+{
+  "chapters": [
+    {
+      "id": 1,
+      "code": "CHAPTER 1",
+      "title": "Maria Celebrates Brazil",
+      "words": [
+        {"w": "aside", "m": "到一旁"},
+        {"w": "plead", "m": "懇求"},
+        {"w": "fair", "m": "公平的／市集"},
+        {"w": "share", "m": "分享"},
+        {"w": "invited", "m": "被邀請"},
+        {"w": "scurries", "m": "急匆匆地跑"},
+        {"w": "language", "m": "語言"},
+        {"w": "culture", "m": "文化"},
+        {"w": "parade", "m": "遊行"},
+        {"w": "practice", "m": "練習"},
+        {"w": "beat", "m": "節拍／擊打"},
+        {"w": "costumes", "m": "服裝／戲服"},
+        {"w": "crowd", "m": "人群"},
+        {"w": "proud", "m": "驕傲的"},
+        {"w": "chance", "m": "機會"}
+      ]
+    },
+    {
+      "id": 2,
+      "code": "CHAPTER 2",
+      "title": "A Look at Families",
+      "words": [
+        {"w": "common", "m": "共同的／常見的"},
+        {"w": "differences", "m": "不同之處"},
+        {"w": "include", "m": "包含"},
+        {"w": "light", "m": "輕的／光線"},
+        {"w": "near", "m": "附近的"},
+        {"w": "row", "m": "一排／划船"},
+        {"w": "stilts", "m": "高蹺"}
+      ]
+    },
+    {
+      "id": 3,
+      "code": "CHAPTER 3",
+      "title": "Secret Nest",
+      "words": [
+        {"w": "actions", "m": "行動／動作"},
+        {"w": "afraid", "m": "害怕的"},
+        {"w": "depend on", "m": "取決於／依靠"},
+        {"w": "fall", "m": "掉落／跌倒"},
+        {"w": "flapped", "m": "拍打（翅膀）"},
+        {"w": "ground", "m": "地面"},
+        {"w": "nervously", "m": "緊張地"},
+        {"w": "nest", "m": "鳥巢"},
+        {"w": "patch", "m": "一小塊／補丁"},
+        {"w": "peered", "m": "仔細看／凝視"},
+        {"w": "perfectly", "m": "完美地"},
+        {"w": "rescue", "m": "救援／營救"},
+        {"w": "secret", "m": "秘密"},
+        {"w": "uneasy", "m": "不安的"},
+        {"w": "worms", "m": "蠕蟲"}
+      ]
+    },
+    {
+      "id": 4,
+      "code": "CHAPTER 4",
+      "title": "Harvest Adventure",
+      "words": [
+        {"w": "blocked", "m": "被阻擋的／堵住的"},
+        {"w": "chopped", "m": "切碎的／砍下的"},
+        {"w": "harvest", "m": "收穫／收成"},
+        {"w": "reward", "m": "獎勵"},
+        {"w": "rumbled", "m": "發出隆隆聲／轟隆作響"},
+        {"w": "tugged", "m": "拉／用力拉扯"},
+        {"w": "waists", "m": "腰部／腰圍"}
+      ]
+    },
+    {
+      "id": 5,
+      "code": "CHAPTER 5",
+      "title": "Wild Horse Valley",
+      "words": [
+        {"w": "allowed", "m": "被允許的"},
+        {"w": "excited", "m": "興奮的"},
+        {"w": "grooms", "m": "梳理／照料（動物）"},
+        {"w": "hay", "m": "乾草"},
+        {"w": "mane", "m": "鬃毛"},
+        {"w": "needs", "m": "需要"},
+        {"w": "roam", "m": "漫遊／自由走動"},
+        {"w": "saddle", "m": "馬鞍"},
+        {"w": "safe", "m": "安全的"},
+        {"w": "smooth", "m": "平滑的／順滑的"},
+        {"w": "stall", "m": "馬廄／畜欄"},
+        {"w": "strokes", "m": "輕撫／撫摸"},
+        {"w": "take care of", "m": "照顧"},
+        {"w": "wandered", "m": "漫步／閒逛"},
+        {"w": "wild", "m": "野生的／野外的"}
+      ]
+    },
+    {
+      "id": 6,
+      "code": "CHAPTER 6",
+      "title": "Animal Shelter",
+      "words": [
+        {"w": "animal shelter", "m": "動物收容所"},
+        {"w": "different", "m": "不同的"},
+        {"w": "exercise", "m": "運動／鍛鍊"},
+        {"w": "in charge of", "m": "負責"},
+        {"w": "leash", "m": "牽繩"},
+        {"w": "owner", "m": "主人／飼主"},
+        {"w": "veterinarian", "m": "獸醫"}
+      ]
+    }
+  ]
+}
