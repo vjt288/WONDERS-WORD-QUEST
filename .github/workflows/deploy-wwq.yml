@@ -1,0 +1,60 @@
+name: Deploy WONDERS WORD QUEST
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wwq-game.zip.part*'
+      - '.github/workflows/deploy-wwq.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Restore complete game package
+        shell: python
+        run: |
+          from pathlib import Path, PurePosixPath
+          import hashlib, io, zipfile
+          parts = sorted(Path('.').glob('wwq-game.zip.part*'))
+          assert len(parts) == 6, 'The complete game needs all six package parts'
+          package = b''.join(p.read_bytes() for p in parts)
+          assert hashlib.sha256(package).hexdigest() == '9d684a85abb46259613d4a24d9402cc1f8d3d021e6278c6d12c86a3a0a56a396', 'Package integrity check failed'
+          output = Path('_site')
+          output.mkdir()
+          with zipfile.ZipFile(io.BytesIO(package)) as archive:
+              for entry in archive.infolist():
+                  if entry.is_dir():
+                      continue
+                  path = PurePosixPath(entry.filename)
+                  assert len(path.parts) > 1 and not path.is_absolute() and '..' not in path.parts, 'Invalid package path'
+                  target = output.joinpath(*path.parts[1:])
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(archive.read(entry))
+          assert (output / 'index.html').is_file(), 'Missing game entry point'
+          (output / '.nojekyll').touch()
+          print('Restored', len(list(output.rglob('*'))), 'game files and directories')
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload complete game
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: '_site'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
