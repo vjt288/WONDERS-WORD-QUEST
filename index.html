@@ -1346,6 +1346,7 @@ body.wwqPortraitMode .wwqStoryBg,body.wwqPortraitMode .wwqStoryLine,body.wwqPort
 /* R55: scale text with the fitted game canvas and contain the map tutorial. */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;--wwqTextScale:1}
 #game{font-size:calc(16px * var(--wwqTextScale))}
+:where(#game) :where(button,input,select,textarea){font:inherit}
 .wwqGuideCopy18{min-height:0;overflow:hidden}
 .wwqGuideZhTitle18{flex-shrink:0}
 .wwqGuideCopy18 .wwqGuideZh18{flex:1;min-height:0;overflow:auto;margin-bottom:.45em!important;overscroll-behavior:contain}
