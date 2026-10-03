@@ -6,6 +6,8 @@ on:
     paths:
       - 'wwq-game.zip.part*'
       - '.github/workflows/deploy-wwq.yml'
+      - 'index.html'
+      - 'manifest.webmanifest'
   workflow_dispatch:
 
 permissions:
@@ -48,6 +50,8 @@ jobs:
                   target.write_bytes(archive.read(entry))
           assert (output / 'index.html').is_file(), 'Missing game entry point'
           (output / '.nojekyll').touch()
+          for name in ['index.html', 'manifest.webmanifest']:
+              (output / name).write_bytes(Path(name).read_bytes())
           print('Restored', len(list(output.rglob('*'))), 'game files and directories')
       - name: Setup Pages
         uses: actions/configure-pages@v5
