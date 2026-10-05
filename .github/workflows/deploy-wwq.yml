@@ -8,6 +8,7 @@ on:
       - '.github/workflows/deploy-wwq.yml'
       - 'index.html'
       - 'manifest.webmanifest'
+      - 'optimize_assets.py'
   workflow_dispatch:
 
 permissions:
@@ -53,6 +54,10 @@ jobs:
           for name in ['index.html', 'manifest.webmanifest']:
               (output / name).write_bytes(Path(name).read_bytes())
           print('Restored', len(list(output.rglob('*'))), 'game files and directories')
+      - name: Install lossless asset optimizer
+        run: python -m pip install --disable-pip-version-check Pillow==12.3.0
+      - name: Build verified lossless delivery assets
+        run: python optimize_assets.py _site
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload complete game
