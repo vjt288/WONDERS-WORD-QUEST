@@ -1873,6 +1873,7 @@ function finalVictory(){
 // R47: video sound plays on its own; cancel leftover battle speech/timers.
 function wwqPrepareVideo(){
   wwqStopBgm();clearInterval(timer);wwqClearGameDelay(window.attackWatchTimer);
+  wwqSpeechActive=false;wwqSpeechResumeBgm=false;
   ++wwqSpeechToken;clearTimeout(wwqSpeechSafetyTimer);
   if('speechSynthesis' in window)speechSynthesis.cancel();
 }
