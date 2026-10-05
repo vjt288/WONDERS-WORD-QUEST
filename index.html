@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R60</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R61</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#07101d;color:#fff;font-family:system-ui,"Noto Sans TC",sans-serif}body{overflow:hidden}#game{width:100vw;height:100vh;display:grid;place-items:center}.screen{width:min(100vw,177.78vh);height:min(100vh,56.25vw);position:relative;overflow:hidden;background:linear-gradient(#66c2e4 0 55%,#65a85a 55%)}
 .panel{position:absolute;left:5%;right:5%;top:6%;padding:20px;background:#101a31ed;border:4px solid #ffd45a;border-radius:18px;text-align:center;box-shadow:0 8px #050914;z-index:10}.panel.compact{padding:14px}.title{color:#ffd45a;font-size:clamp(28px,4vw,62px);margin:4px;text-shadow:4px 4px #512a31}.subtitle{font-size:clamp(18px,2vw,32px)}.btn,input{font:inherit}.btn{margin:7px;padding:11px 17px;border:0;border-radius:12px;background:#ffd45a;color:#172238;font-weight:900;cursor:pointer;box-shadow:0 5px #9b6b1c}.btn:active{transform:translateY(4px);box-shadow:0 1px #9b6b1c}.btn.secondary{background:#b7d5ff}.btn.danger{background:#ff8d8d}.btn:disabled{opacity:.4;cursor:not-allowed}.disabled{opacity:.4;pointer-events:none}input{padding:10px;border-radius:10px;border:3px solid #ffd45a;width:min(90%,360px)}
@@ -1407,8 +1407,13 @@ const img=x=>`<img id="${x}" class="char" src="assets/${x}.png">`;
 const slug=w=>w.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
 function pickVoice(lang){if(!('speechSynthesis'in window))return null;const voices=speechSynthesis.getVoices();const exact=voices.find(v=>v.lang&&v.lang.toLowerCase()===lang.toLowerCase());if(exact)return exact;const prefix=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase())&&/taiwan|taipei|zh[-_]tw/i.test(v.name+' '+v.lang));return prefix||voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()))||null}
 const WWQ_BGM_NORMAL_VOLUME=.34;
-const WWQ_BGM_DUCK_VOLUME=.11;
 let wwqBgmFadeRaf=0,wwqSpeechToken=0,wwqSpeechSafetyTimer=0;
+let wwqSpeechActive=false,wwqSpeechResumeBgm=false;
+function wwqPauseMusicForSpeech(){
+  cancelAnimationFrame(wwqBgmFadeRaf);wwqBgmFadeRaf=0;
+  if(wwqBgm){if(!wwqBgm.paused)wwqSpeechResumeBgm=true;try{wwqBgm.pause()}catch(_){}}
+  for(const pool of wwqSfxPlayers.values())for(const player of pool){try{player.pause();player.currentTime=0}catch(_){}}
+}
 function wwqFadeBgmTo(target,duration=300){
   if(!wwqBgm)return;
   cancelAnimationFrame(wwqBgmFadeRaf);
@@ -1417,18 +1422,31 @@ function wwqFadeBgmTo(target,duration=300){
   wwqBgmFadeRaf=requestAnimationFrame(step);
 }
 function wwqSpeak(text,lang,rate,pitch=1){
-  if(!('speechSynthesis'in window))return;
+  if(!('speechSynthesis'in window)||document.hidden||wwqBackgroundSuspended)return;
   const token=++wwqSpeechToken;
   clearTimeout(wwqSpeechSafetyTimer);
   speechSynthesis.cancel();
-  // Duck, never mute. Old cancelled utterances cannot restore because their token is stale.
-  if(wwqBgm)wwqFadeBgmTo(WWQ_BGM_DUCK_VOLUME,120);
+  // R61: prioritize speech, including on iOS where per-element volume may be ignored.
+  wwqSpeechActive=true;
+  wwqPauseMusicForSpeech();
   const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=rate;u.pitch=pitch;u.volume=1.0;
   const v=pickVoice(lang);if(v)u.voice=v;
-  const restore=()=>{if(token!==wwqSpeechToken)return;clearTimeout(wwqSpeechSafetyTimer);if(wwqBgm)wwqFadeBgmTo(WWQ_BGM_NORMAL_VOLUME,320)};
+  const restore=()=>{
+    if(token!==wwqSpeechToken||!wwqSpeechActive)return;
+    clearTimeout(wwqSpeechSafetyTimer);wwqSpeechActive=false;
+    const resume=wwqSpeechResumeBgm;wwqSpeechResumeBgm=false;
+    if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){
+      wwqBgm.volume=WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});
+    }
+  };
+  u.onstart=()=>{if(token===wwqSpeechToken&&wwqSpeechActive)wwqPauseMusicForSpeech()};
   u.onend=restore;u.onerror=restore;
-  speechSynthesis.speak(u);
-  wwqSpeechSafetyTimer=setTimeout(restore,15000);
+  const checkFinished=()=>{
+    if(token!==wwqSpeechToken||!wwqSpeechActive)return;
+    if(speechSynthesis.speaking||speechSynthesis.pending){wwqSpeechSafetyTimer=setTimeout(checkFinished,1000);return;}
+    restore();
+  };
+  try{speechSynthesis.speak(u);if(wwqSpeechActive)wwqSpeechSafetyTimer=setTimeout(checkFinished,15000)}catch(_){restore()}
 }
 function say(x){wwqSpeak(x,'en-US',.8,1)}
 function sayZhTW(x){wwqSpeak(x,'zh-TW',.92,1)}
@@ -1462,13 +1480,13 @@ const wwqBgmPlayers=new Map(),wwqSfxPlayers=new Map();
 let wwqBgm=null, wwqBgmKey='';
 // Retry active BGM after iOS releases the audio lock on a user gesture.
 document.addEventListener('click',()=>{
-  if(!document.hidden&&!wwqBackgroundSuspended&&wwqBgmKey&&wwqBgm&&wwqBgm.paused){
+  if(!document.hidden&&!wwqBackgroundSuspended&&!wwqSpeechActive&&wwqBgmKey&&wwqBgm&&wwqBgm.paused){
     wwqBgm.play().catch(()=>{});
   }
 });
 function wwqPlayBgm(key){
   if(!WWQ_AUDIO.bgm[key])return;
-  if(wwqBgmKey===key && wwqBgm && !wwqBgm.paused)return;
+  if(wwqBgmKey===key && wwqBgm && (!wwqBgm.paused||wwqSpeechActive))return;
   if(wwqBgm){try{wwqBgm.pause();wwqBgm.currentTime=0}catch(e){}}
   wwqBgmKey=key;
   if(!wwqBgmPlayers.has(key)){
@@ -1480,9 +1498,11 @@ function wwqPlayBgm(key){
   wwqBgm.volume=WWQ_BGM_NORMAL_VOLUME;
   // R60: never start audio while iPhone Safari/PWA is backgrounded.
   if(document.hidden||wwqBackgroundSuspended)return;
+  if(wwqSpeechActive){wwqSpeechResumeBgm=true;return;}
   wwqBgm.play().catch(()=>{});
 }
 function wwqStopBgm(){
+  wwqSpeechResumeBgm=false;
   if(wwqBgm){try{wwqBgm.pause();wwqBgm.currentTime=0}catch(e){}}
   wwqBgm=null;wwqBgmKey='';
 }
@@ -1495,7 +1515,8 @@ const wwqBackgroundVideos=new Set();
 function wwqSuspendMediaForBackground(){
   if(wwqBackgroundSuspended)return;
   wwqBackgroundSuspended=true;
-  wwqBackgroundResumeBgm=Boolean(wwqBgm&&wwqBgmKey&&!wwqBgm.paused);
+  wwqBackgroundResumeBgm=Boolean(wwqBgm&&wwqBgmKey&&(!wwqBgm.paused||wwqSpeechResumeBgm));
+  wwqSpeechActive=false;wwqSpeechResumeBgm=false;
 
   cancelAnimationFrame(wwqBgmFadeRaf);
   wwqBgmFadeRaf=0;
@@ -1556,6 +1577,7 @@ window.addEventListener('blur',()=>{
 document.addEventListener('freeze',wwqSuspendMediaForBackground);
 window.addEventListener('beforeunload',wwqSuspendMediaForBackground);
 function wwqSfx(key){
+  if(document.hidden||wwqBackgroundSuspended||wwqSpeechActive)return;
   const src=WWQ_AUDIO.sfx[key];
   if(!src)return;
   try{
