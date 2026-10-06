@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R73</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R74</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#07101d;color:#fff;font-family:system-ui,"Noto Sans TC",sans-serif}body{overflow:hidden}#game{width:100vw;height:100vh;display:grid;place-items:center}.screen{width:min(100vw,177.78vh);height:min(100vh,56.25vw);position:relative;overflow:hidden;background:linear-gradient(#66c2e4 0 55%,#65a85a 55%)}
 .panel{position:absolute;left:5%;right:5%;top:6%;padding:20px;background:#101a31ed;border:4px solid #ffd45a;border-radius:18px;text-align:center;box-shadow:0 8px #050914;z-index:10}.panel.compact{padding:14px}.title{color:#ffd45a;font-size:clamp(28px,4vw,62px);margin:4px;text-shadow:4px 4px #512a31}.subtitle{font-size:clamp(18px,2vw,32px)}.btn,input{font:inherit}.btn{margin:7px;padding:11px 17px;border:0;border-radius:12px;background:#ffd45a;color:#172238;font-weight:900;cursor:pointer;box-shadow:0 5px #9b6b1c}.btn:active{transform:translateY(4px);box-shadow:0 1px #9b6b1c}.btn.secondary{background:#b7d5ff}.btn.danger{background:#ff8d8d}.btn:disabled{opacity:.4;cursor:not-allowed}.disabled{opacity:.4;pointer-events:none}input{padding:10px;border-radius:10px;border:3px solid #ffd45a;width:min(90%,360px)}
@@ -1496,7 +1496,7 @@ function wwqCancelSpeechForFeedback(){
   if(wwqSpeechActive&&'speechSynthesis'in window){try{speechSynthesis.cancel()}catch(_){}}
   wwqSpeechActive=false;
   const resume=wwqSpeechResumeBgm;wwqSpeechResumeBgm=false;
-  if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){wwqBgm.volume=wwqBgmKey==='story'?.055:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});}
+  if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){wwqBgm.volume=wwqBgmKey==='story'?.11:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});}
   for(const player of wwqSfxPlayers.get('button')||[]){try{player.pause();player.currentTime=0}catch(_){}}
 }
 function wwqPauseMusicForSpeech(){
@@ -1529,7 +1529,7 @@ function wwqSpeak(text,lang,rate,pitch=1,onComplete=null){
     clearTimeout(wwqSpeechSafetyTimer);wwqSpeechActive=false;
     const resume=wwqSpeechResumeBgm;wwqSpeechResumeBgm=false;
     if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){
-      wwqBgm.volume=wwqBgmKey==='story'?.055:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});
+      wwqBgm.volume=wwqBgmKey==='story'?.11:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});
     }
     if(onComplete)onComplete();
   };
@@ -1591,14 +1591,14 @@ function wwqPlayBgm(key){
   }
   wwqBgm=wwqBgmPlayers.get(key);
   wwqBgm.loop=true;
-  wwqBgm.volume=wwqBgmKey==='story'?.055:WWQ_BGM_NORMAL_VOLUME;
+  wwqBgm.volume=wwqBgmKey==='story'?.11:WWQ_BGM_NORMAL_VOLUME;
   // R60: never start audio while iPhone Safari/PWA is backgrounded.
   if(document.hidden||wwqBackgroundSuspended)return;
   if(wwqSpeechActive){wwqSpeechResumeBgm=true;return;}
   if(key==='story'){
     const player=wwqBgm;player.preload='auto';player.volume=0;
     player.addEventListener('playing',()=>{
-      if(wwqBgm===player&&wwqBgmKey==='story')wwqFadeBgmTo(.055,1200);
+      if(wwqBgm===player&&wwqBgmKey==='story')wwqFadeBgmTo(.11,1200);
     },{once:true});
   }
   wwqBgm.play().catch(()=>{});
@@ -1655,7 +1655,7 @@ function wwqResumeMediaFromBackground(){
   const resumeBgm=wwqBackgroundResumeBgm;
   wwqBackgroundResumeBgm=false;
   if(resumeBgm&&wwqBgm&&wwqBgmKey){
-    wwqBgm.volume=wwqBgmKey==='story'?.055:WWQ_BGM_NORMAL_VOLUME;
+    wwqBgm.volume=wwqBgmKey==='story'?.11:WWQ_BGM_NORMAL_VOLUME;
     wwqBgm.play().catch(()=>{});
   }
 
