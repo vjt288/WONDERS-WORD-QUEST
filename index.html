@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R63</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R64</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#07101d;color:#fff;font-family:system-ui,"Noto Sans TC",sans-serif}body{overflow:hidden}#game{width:100vw;height:100vh;display:grid;place-items:center}.screen{width:min(100vw,177.78vh);height:min(100vh,56.25vw);position:relative;overflow:hidden;background:linear-gradient(#66c2e4 0 55%,#65a85a 55%)}
 .panel{position:absolute;left:5%;right:5%;top:6%;padding:20px;background:#101a31ed;border:4px solid #ffd45a;border-radius:18px;text-align:center;box-shadow:0 8px #050914;z-index:10}.panel.compact{padding:14px}.title{color:#ffd45a;font-size:clamp(28px,4vw,62px);margin:4px;text-shadow:4px 4px #512a31}.subtitle{font-size:clamp(18px,2vw,32px)}.btn,input{font:inherit}.btn{margin:7px;padding:11px 17px;border:0;border-radius:12px;background:#ffd45a;color:#172238;font-weight:900;cursor:pointer;box-shadow:0 5px #9b6b1c}.btn:active{transform:translateY(4px);box-shadow:0 1px #9b6b1c}.btn.secondary{background:#b7d5ff}.btn.danger{background:#ff8d8d}.btn:disabled{opacity:.4;cursor:not-allowed}.disabled{opacity:.4;pointer-events:none}input{padding:10px;border-radius:10px;border:3px solid #ffd45a;width:min(90%,360px)}
@@ -1444,9 +1444,10 @@ function wwqFadeBgmTo(target,duration=300){
   const step=(now)=>{if(a!==wwqBgm)return;const t=Math.min(1,(now-t0)/duration);a.volume=start+(target-start)*t;if(t<1)wwqBgmFadeRaf=requestAnimationFrame(step)};
   wwqBgmFadeRaf=requestAnimationFrame(step);
 }
-function wwqSpeak(text,lang,rate,pitch=1){
-  if(!('speechSynthesis'in window)||document.hidden||wwqBackgroundSuspended)return;
-  if(wwqFeedbackPlayers.size){wwqPendingSpeech=[text,lang,rate,pitch];return;}
+function wwqSpeak(text,lang,rate,pitch=1,onComplete=null){
+  if(document.hidden||wwqBackgroundSuspended)return;
+  if(!('speechSynthesis'in window)){if(onComplete)onComplete();return;}
+  if(wwqFeedbackPlayers.size){wwqPendingSpeech=[text,lang,rate,pitch,onComplete];return;}
   wwqPendingSpeech=null;
   const token=++wwqSpeechToken;
   clearTimeout(wwqSpeechSafetyTimer);
@@ -1463,6 +1464,7 @@ function wwqSpeak(text,lang,rate,pitch=1){
     if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){
       wwqBgm.volume=WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});
     }
+    if(onComplete)onComplete();
   };
   u.onstart=()=>{if(token===wwqSpeechToken&&wwqSpeechActive)wwqPauseMusicForSpeech()};
   u.onend=restore;u.onerror=restore;
@@ -1473,7 +1475,7 @@ function wwqSpeak(text,lang,rate,pitch=1){
   };
   try{speechSynthesis.speak(u);if(wwqSpeechActive)wwqSpeechSafetyTimer=setTimeout(checkFinished,15000)}catch(_){restore()}
 }
-function say(x){wwqSpeak(x,'en-US',.8,1)}
+function say(x,onComplete=null){wwqSpeak(x,'en-US',.8,1,onComplete)}
 function sayZhTW(x){wwqSpeak(x,'zh-TW',.92,1)}
 function shuffle(a){const result=a.slice();for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}return result;}
 function resetQuiz(){qIndex=0;score=0;combo=0;stars=0;order=shuffle([...Array(CH[currentCh].words.length).keys()]);}
@@ -1589,6 +1591,7 @@ function wwqResumeMediaFromBackground(){
     });
   }
   wwqBackgroundVideos.clear();
+  wwqResumeSentenceReading();
 }
 
 document.addEventListener('visibilitychange',()=>{
@@ -1803,7 +1806,8 @@ function finishMode(name){
   G.innerHTML=gameShell(`<div class="wwqStageClearBg" style="background-image:url('${clearBg}')"><img class="wwqClearPanel" src="assets/ch1_ui/clear_panel.png"><div class="wwqClearChapter">${wwqStageLabel(m===undefined?0:m)}</div><div class="wwqClearScore">${score}</div><div class="wwqClearStars">${'★'.repeat(Math.max(0,Math.min(3,stars)))}${'☆'.repeat(Math.max(0,3-stars))}</div><button class="wwqClearContinue" onclick="${currentCh===6&&m===5?'finalCastle()':'chapterMenu('+currentCh+')'}" aria-label="CONTINUE"></button></div>`);
 }
 function pictureMatch(){const w=CH[currentCh].words[order[qIndex]][0];wwqLearningQuestion(w);let pool=shuffle([w,...makeDistractors(w,12)]).filter((x,i,a)=>x&&a.indexOf(x)===i);if(!pool.includes(w))pool.unshift(w);let a=pool.slice(0,4);if(!a.includes(w))a[0]=w;while(a.length<4){const more=makeDistractors(w,20).find(x=>x&&!a.includes(x));if(!more)break;a.push(more)}a=shuffle(a);const stageBg=wwqStageBg(currentCh,1);const cls=['wwqTPicA','wwqTPicB','wwqTPicC','wwqTPicD'];G.innerHTML=gameShell(`<div class="wwqTStage" style="background-image:url('${stageBg}')"><img class="wwqTOverlay" src="assets/ch1_ui/picture_game.png"><div class="wwqTDyn wwqTChapterNo">${wwqStageLabel(1)}</div><div class="wwqTDyn wwqTHudScore">${score}</div><div class="wwqTDyn wwqTHudStars">${stars}</div><div class="wwqTDyn wwqTHudCombo">${combo}</div><div class="wwqTDyn wwqTHudCount">${qIndex+1}/${CH[currentCh].words.length}</div><div class="wwqTTimeTrack"><div class="bar" id="bar"></div></div><div class="wwqTDyn wwqTTimeText"><span id="timerSec">30</span>s</div><img class="wwqTPicture" src="${wwqPicturePath(w)}" alt="picture clue">${a.map((x,i)=>`<button class="wwqTPicAnswer ${cls[i]}" onclick="answerChoice('${esc(x)}','${esc(w)}',${qIndex},false)">${x}</button>`).join('')}<div id="f" class="wwqTFeedback wwqTPicFeedback"></div><div class="question" style="display:none"><div class="mini">PICTURE MATCH</div></div></div>`);runTimer(30,()=>answerChoice('',w,qIndex,true))}
-function meaningQuest(){const [w,m]=CH[currentCh].words[order[qIndex]];wwqLearningQuestion(w);const answers=shuffle([m,...makeMeaningDistractors(w)]).slice(0,4);G.innerHTML=wwqTemplateStage(2,'assets/ch1_ui/word_meaning_game_template.png',`<div class="wwqGPrompt">${w}</div>${answers.map((x,i)=>`<button class="wwqGAnswer ${['wwqGA','wwqGB','wwqGC','wwqGD'][i]}" onclick="answerMeaning('${esc(x)}','${esc(m)}',false)">${x}</button>`).join('')}<div id="f" class="wwqTFeedback wwqGFeedbackWide"></div>`);window.currentModeLabel='WORD → MEANING';say(w);runTimer(30,()=>answerMeaning('',m,true))}
+function wwqWordDisplay(word){const text=String(word).toLowerCase();return text.charAt(0).toUpperCase()+text.slice(1)}
+function meaningQuest(){const [w,m]=CH[currentCh].words[order[qIndex]];wwqLearningQuestion(w);const answers=shuffle([m,...makeMeaningDistractors(w)]).slice(0,4);G.innerHTML=wwqTemplateStage(2,'assets/ch1_ui/word_meaning_game_template.png',`<div class="wwqGPrompt" style="text-transform:none">${wwqWordDisplay(w)}</div>${answers.map((x,i)=>`<button class="wwqGAnswer ${['wwqGA','wwqGB','wwqGC','wwqGD'][i]}" onclick="answerMeaning('${esc(x)}','${esc(m)}',false)">${x}</button>`).join('')}<div id="f" class="wwqTFeedback wwqGFeedbackWide"></div>`);window.currentModeLabel='WORD → MEANING';say(w);runTimer(30,()=>answerMeaning('',m,true))}
 function answerMeaning(x,m,to=false){if(wwqResponsiveBlocked)return;if(window.lock)return;window.lock=true;wwqLearningAnswer(!to&&x===m);clearInterval(timer);const f=document.getElementById('f');if(x===m){score+=10;combo++;stars=Math.min(3,stars+(seconds>=22?1:0));wwqSfx('correct');f.textContent='✅ CORRECT!'}else{combo=0;wwqSfx('wrong');f.textContent=to?'⏰ TIME’S UP!':'❌ Correct: '+m}window.lock=false;qIndex++;if(qIndex<CH[currentCh].words.length)wwqGameDelay(meaningQuest,700);else finishMode('WORD → MEANING')}
 function makeWordDistractors(w,n=3){const all=CH[currentCh].words.map(x=>x[0]).filter(x=>x!==w);return shuffle(all).slice(0,n)}
 // WORD ATTACK uses only real English words or established English phrases.
@@ -1823,7 +1827,36 @@ function addScr(k,x){if(window.su.includes(k))return;window.su.push(k);window.sa
 function clearScr(){window.sa='';window.su=[];window.sp.forEach((_,k)=>document.getElementById('q'+k).disabled=false);document.getElementById('typed').textContent='_'}
 function checkScr(to=false){if(window.lock)return;window.lock=true;clearInterval(timer);const w=CH[currentCh].words[order[qIndex]][0].toUpperCase().replace(/\s+/g,'');const f=document.getElementById('f');if(!to&&window.sa===w){score+=10;combo++;wwqSfx('correct');f.textContent='✅ CORRECT!'}else{combo=0;wwqSfx('wrong');f.textContent=to?'⏰ TIME’S UP!':'❌ Correct: '+w}window.lock=false;qIndex++;if(qIndex<CH[currentCh].words.length)wwqGameDelay(scramble,700);else finishMode('SCRAMBLE')}
 function sentenceQuest(){const [w]=CH[currentCh].words[order[qIndex]];wwqLearningQuestion(w);let sentence=SENTS[currentCh].find(x=>x[1]===w)?.[0]||`Choose the word that completes this sentence: ______.`;window.currentSentence=sentence;const shownSentence=sentence.replace(w,'______');const choices=shuffle([w,...makeDistractors(w,3)]);G.innerHTML=wwqTemplateStage(4,'assets/ch1_ui/sentence_game_template.png',`<div class="wwqGPrompt sentence">${shownSentence}</div>${choices.map((x,i)=>`<button class="wwqGAnswer ${['wwqGA','wwqGB','wwqGC','wwqGD'][i]}" onclick="answerSentence('${esc(x)}','${esc(w)}')">${x}</button>`).join('')}<div id="f" class="wwqTFeedback wwqGFeedbackWide"></div>`);window.currentModeLabel='SENTENCE QUEST';runTimer(30,()=>answerSentence('',w,true))}
-function answerSentence(x,w,to=false){if(wwqResponsiveBlocked)return;if(window.lock)return;window.lock=true;wwqLearningAnswer(!to&&x===w);clearInterval(timer);const f=document.getElementById('f');if(x===w){score+=10;combo++;if(seconds>=22)stars=Math.min(3,stars+1);wwqSfx('correct');f.textContent='✅ CORRECT!';const fullSentence=(window.currentSentence||'').replace('______',w);wwqGameDelay(()=>say(fullSentence||w),320)}else{combo=0;wwqSfx('wrong');f.textContent=to?'⏰ TIME’S UP!':'❌ Correct: '+w}window.lock=false;qIndex++;if(qIndex<CH[currentCh].words.length)wwqGameDelay(sentenceQuest,700);else finishMode('SENTENCE QUEST')}
+let wwqSentenceReading=null;
+function wwqResumeSentenceReading(){
+  const state=wwqSentenceReading;
+  if(!state||document.hidden||wwqBackgroundSuspended)return;
+  if(document.getElementById('f')!==state.feedback||qIndex!==state.index||currentCh!==state.chapter){wwqSentenceReading=null;return;}
+  say(state.text,()=>{
+    if(wwqSentenceReading!==state)return;
+    wwqSentenceReading=null;
+    if(document.getElementById('f')!==state.feedback||qIndex!==state.index||currentCh!==state.chapter)return;
+    wwqGameDelay(state.advance,0);
+  });
+}
+function answerSentence(x,w,to=false){
+  if(wwqResponsiveBlocked||window.lock)return;
+  window.lock=true;
+  const ok=!to&&x===w;
+  wwqLearningAnswer(ok);clearInterval(timer);
+  const f=document.getElementById('f');
+  const advance=()=>{window.lock=false;qIndex++;if(qIndex<CH[currentCh].words.length)sentenceQuest();else finishMode('SENTENCE QUEST')};
+  if(ok){
+    score+=10;combo++;if(seconds>=22)stars=Math.min(3,stars+1);
+    wwqSfx('correct');f.textContent='✅ CORRECT!';
+    const fullSentence=(window.currentSentence||'').replace('______',w);
+    wwqSentenceReading={text:fullSentence||w,feedback:f,index:qIndex,chapter:currentCh,advance};
+    wwqGameDelay(wwqResumeSentenceReading,320);
+  }else{
+    combo=0;wwqSfx('wrong');f.textContent=to?'⏰ TIME’S UP!':'❌ Correct: '+w;
+    wwqGameDelay(advance,700);
+  }
+}
 function answerChoice(x,w,idx,to){if(wwqResponsiveBlocked)return;if(window.lock)return;window.lock=true;wwqLearningAnswer(!to&&x===w);clearInterval(timer);const f=document.getElementById('f');if(x===w){score+=10;combo++;if(seconds>=22)stars=Math.min(3,stars+1);wwqSfx('correct');f.textContent='✅ CORRECT!'}else{combo=0;wwqSfx('wrong');f.textContent=to?'⏰ TIME’S UP!':'❌ Correct: '+w}window.lock=false;qIndex++;if(qIndex<CH[currentCh].words.length)wwqGameDelay(pictureMatch,700);else finishMode('PICTURE MATCH')}
 function modeLabelName(){return window.currentModeLabel||'CHALLENGE'}
 function wordAttack(){const w=CH[currentCh].words[order[qIndex]][0];clearInterval(timer);wwqClearGameDelay(window.attackWatchTimer);const stageBg=wwqStageBg(currentCh,5);G.innerHTML=gameShell(`<div class="wwqTStage" style="background-image:url('${stageBg}')"><img class="wwqTOverlay" src="assets/ch1_ui/word_attack_watch.png"><div class="wwqTDyn wwqTChapterNo">${wwqStageLabel(5)}</div><div class="wwqTDyn wwqTHudScore">${score}</div><div class="wwqTDyn wwqTHudStars">${stars}</div><div class="wwqTDyn wwqTHudCombo">${combo}</div><div class="wwqTDyn wwqTHudCount">${qIndex+1}/${CH[currentCh].words.length}</div><div class="wwqTTimeTrack"><div class="bar"></div></div><div class="wwqTDyn wwqTTimeText">0.5s</div><div class="wwqAttackFlash">${w.toUpperCase()}</div><div class="wwqAttackWatchNote">WATCH 0.5 SECONDS</div><button class="wwqAttackPlay" onclick="startAttackWatch('${esc(w)}')">PLAY WORD</button><button class="wwqTBack" onclick="chapterMenu(${currentCh})">← STAGE MAP</button></div>`);window.currentModeLabel='WORD ATTACK';window.attackWatching=false}
@@ -1908,6 +1941,7 @@ function finalVictory(){
 }
 // R47: video sound plays on its own; cancel leftover battle speech/timers.
 function wwqPrepareVideo(){
+  wwqSentenceReading=null;
   wwqStopBgm();clearInterval(timer);wwqClearGameDelay(window.attackWatchTimer);
   wwqClearPendingFeedback();
   wwqSpeechActive=false;wwqSpeechResumeBgm=false;
