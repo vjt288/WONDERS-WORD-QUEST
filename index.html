@@ -1496,7 +1496,7 @@ function wwqCancelSpeechForFeedback(){
   if(wwqSpeechActive&&'speechSynthesis'in window){try{speechSynthesis.cancel()}catch(_){}}
   wwqSpeechActive=false;
   const resume=wwqSpeechResumeBgm;wwqSpeechResumeBgm=false;
-  if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){wwqBgm.volume=wwqBgmKey==='story'?.065:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});}
+  if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){wwqBgm.volume=wwqBgmKey==='story'?.04:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});}
   for(const player of wwqSfxPlayers.get('button')||[]){try{player.pause();player.currentTime=0}catch(_){}}
 }
 function wwqPauseMusicForSpeech(){
@@ -1529,7 +1529,7 @@ function wwqSpeak(text,lang,rate,pitch=1,onComplete=null){
     clearTimeout(wwqSpeechSafetyTimer);wwqSpeechActive=false;
     const resume=wwqSpeechResumeBgm;wwqSpeechResumeBgm=false;
     if(resume&&wwqBgm&&wwqBgmKey&&!document.hidden&&!wwqBackgroundSuspended){
-      wwqBgm.volume=wwqBgmKey==='story'?.065:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});
+      wwqBgm.volume=wwqBgmKey==='story'?.04:WWQ_BGM_NORMAL_VOLUME;wwqBgm.play().catch(()=>{});
     }
     if(onComplete)onComplete();
   };
@@ -1591,14 +1591,14 @@ function wwqPlayBgm(key){
   }
   wwqBgm=wwqBgmPlayers.get(key);
   wwqBgm.loop=true;
-  wwqBgm.volume=wwqBgmKey==='story'?.065:WWQ_BGM_NORMAL_VOLUME;
+  wwqBgm.volume=wwqBgmKey==='story'?.04:WWQ_BGM_NORMAL_VOLUME;
   // R60: never start audio while iPhone Safari/PWA is backgrounded.
   if(document.hidden||wwqBackgroundSuspended)return;
   if(wwqSpeechActive){wwqSpeechResumeBgm=true;return;}
   if(key==='story'){
     const player=wwqBgm;player.volume=0;
     player.addEventListener('playing',()=>{
-      if(wwqBgm===player&&wwqBgmKey==='story')wwqFadeBgmTo(.065,1200);
+      if(wwqBgm===player&&wwqBgmKey==='story')wwqFadeBgmTo(.04,1200);
     },{once:true});
   }
   wwqBgm.play().catch(()=>{});
@@ -1655,7 +1655,7 @@ function wwqResumeMediaFromBackground(){
   const resumeBgm=wwqBackgroundResumeBgm;
   wwqBackgroundResumeBgm=false;
   if(resumeBgm&&wwqBgm&&wwqBgmKey){
-    wwqBgm.volume=wwqBgmKey==='story'?.065:WWQ_BGM_NORMAL_VOLUME;
+    wwqBgm.volume=wwqBgmKey==='story'?.04:WWQ_BGM_NORMAL_VOLUME;
     wwqBgm.play().catch(()=>{});
   }
 
