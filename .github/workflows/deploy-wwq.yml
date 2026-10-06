@@ -9,7 +9,7 @@ on:
       - 'index.html'
       - 'manifest.webmanifest'
       - 'optimize_assets.py'
-      - 'assets/audio/BGM/The_Weathered_Spellbook.mp3'
+      - 'assets/audio/BGM/燭下魔書.mp3'
   workflow_dispatch:
 
 permissions:
@@ -54,7 +54,7 @@ jobs:
           (output / '.nojekyll').touch()
           for name in ['index.html', 'manifest.webmanifest']:
               (output / name).write_bytes(Path(name).read_bytes())
-          story = Path('assets/audio/BGM/The_Weathered_Spellbook.mp3')
+          story = Path('assets/audio/BGM/燭下魔書.mp3')
           target = output / story
           target.parent.mkdir(parents=True, exist_ok=True)
           target.write_bytes(story.read_bytes())
