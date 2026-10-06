@@ -9,6 +9,7 @@ on:
       - 'index.html'
       - 'manifest.webmanifest'
       - 'optimize_assets.py'
+      - 'assets/audio/BGM/The_Weathered_Spellbook.mp3'
   workflow_dispatch:
 
 permissions:
@@ -53,6 +54,10 @@ jobs:
           (output / '.nojekyll').touch()
           for name in ['index.html', 'manifest.webmanifest']:
               (output / name).write_bytes(Path(name).read_bytes())
+          story = Path('assets/audio/BGM/The_Weathered_Spellbook.mp3')
+          target = output / story
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_bytes(story.read_bytes())
           print('Restored', len(list(output.rglob('*'))), 'game files and directories')
       - name: Install lossless asset optimizer
         run: python -m pip install --disable-pip-version-check Pillow==12.3.0
