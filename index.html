@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R68</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="WONDERS"><meta name="theme-color" content="#000000"><link rel="manifest" href="manifest.webmanifest"><title>WONDERS WORD QUEST · R69</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#07101d;color:#fff;font-family:system-ui,"Noto Sans TC",sans-serif}body{overflow:hidden}#game{width:100vw;height:100vh;display:grid;place-items:center}.screen{width:min(100vw,177.78vh);height:min(100vh,56.25vw);position:relative;overflow:hidden;background:linear-gradient(#66c2e4 0 55%,#65a85a 55%)}
 .panel{position:absolute;left:5%;right:5%;top:6%;padding:20px;background:#101a31ed;border:4px solid #ffd45a;border-radius:18px;text-align:center;box-shadow:0 8px #050914;z-index:10}.panel.compact{padding:14px}.title{color:#ffd45a;font-size:clamp(28px,4vw,62px);margin:4px;text-shadow:4px 4px #512a31}.subtitle{font-size:clamp(18px,2vw,32px)}.btn,input{font:inherit}.btn{margin:7px;padding:11px 17px;border:0;border-radius:12px;background:#ffd45a;color:#172238;font-weight:900;cursor:pointer;box-shadow:0 5px #9b6b1c}.btn:active{transform:translateY(4px);box-shadow:0 1px #9b6b1c}.btn.secondary{background:#b7d5ff}.btn.danger{background:#ff8d8d}.btn:disabled{opacity:.4;cursor:not-allowed}.disabled{opacity:.4;pointer-events:none}input{padding:10px;border-radius:10px;border:3px solid #ffd45a;width:min(90%,360px)}
@@ -1366,7 +1366,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;--wwqTextScale:1}
 
 /* R65: display the original background before/after each full challenge. */
 .wwqBgShowcase{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden}
-.wwqBgReveal>*{animation:wwqBgUiReveal .35s ease-out both}
+.wwqBgReveal>*:not(.wwqAttackPlay){animation:wwqBgUiReveal .35s ease-out both}
 @keyframes wwqBgUiReveal{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.wwqBgReveal>*{animation:none}}
 
@@ -1422,6 +1422,10 @@ License: bitstream-vera
 
 /* R68: slightly larger normal-stage spelling frames; long words still shrink to fit. */
 .wwqTSpellLetter{flex:0 1 7.2%!important;width:7.2%!important}
+
+/* R69: preserve the artwork-only PLAY hit area and school-gate boy scale. */
+.wwqAttackPlay{background:transparent!important;border:0!important;color:transparent!important;opacity:0!important;animation:none!important}
+.wwqHub17 .wwqHero6.boy{height:44.1%!important}
 </style></head><body><div id="game"></div><script>
 const CH={
 1:{title:'Maria Celebrates Brazil',icon:'🇧🇷',theme:'Brazil · Culture · Parade',words:[['aside','在旁邊；到一邊'],['plead','懇求；請求'],['fair','公平的；公正的'],['share','分享'],['invited','被邀請的'],['scurries','急奔；小跑'],['language','語言'],['culture','文化'],['parade','遊行'],['practice','練習'],['beat','節拍；節奏'],['costumes','服裝；服飾'],['crowd','人群'],['proud','驕傲的；自豪的'],['chance','機會']]},
